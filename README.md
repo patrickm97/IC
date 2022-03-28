@@ -1,1 +1,1 @@
-# IC
+# Iniciação Científica - Mini-estufas inteligentes
