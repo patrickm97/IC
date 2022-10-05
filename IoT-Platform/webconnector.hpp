@@ -18,11 +18,11 @@ class WebConnector {
             if (this->wifiServer.isDeviceConfigured(deviceId)) {
                 return true;
             }
-            wifiServer.configureServer("arduino");
+            wifiServer.configureServer(deviceId);
         }
 
         void configureServer(string deviceId) {
-            this->wifiServer.configureServer("test");
+            this->wifiServer.configureServer(deviceId);
         }
 
         string loadData(string devideId) {

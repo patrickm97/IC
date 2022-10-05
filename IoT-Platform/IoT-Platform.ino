@@ -1,3 +1,4 @@
+#include <EEPROM.h>
 #include <iostream>
 #include <WiFi.h>
 #include "localstorage.hpp"
@@ -9,10 +10,7 @@
 
 using namespace std;
 
-/*
-* no ardino.json
-* board: "esp32:esp32:esp32"
-*/
+#define EEPROM_SIZE 1
 
 // declarations
 LocalStorage storage;
@@ -39,6 +37,7 @@ void preLoop(){
 
 
 void setup() {
+    EEPROM.begin(EEPROM_SIZE);
     Serial.begin(115200);
     delay(3000);
 }
@@ -47,7 +46,15 @@ void loop() {
     if (!preLoopExecuted){
         Serial.println("print");
         preLoop();
+
+        int value_stored = EEPROM.read(0);
+        if (value_stored != 1) {
+            EEPROM.write(0, 1);
+            EEPROM.commit();
+            Serial.println("Value 1 written in flash at memory postition 0");
+        }
     }
-    Serial.println("loop executed");
+    Serial.print("value in flash memory: ");
+    Serial.println(EEPROM.read(0));
     delay(5000);
 }
