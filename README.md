@@ -1,1 +1,1 @@
-# Iniciação Científica - Mini-estufas inteligentes
+# Iniciação Científica - Mini estufas inteligentes
