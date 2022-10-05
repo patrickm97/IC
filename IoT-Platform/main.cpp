@@ -7,7 +7,7 @@
 using namespace std;
 /*
 void setup() {
-  LocalStorage storage;
+  LocalStorage storage;   
   WebConnector webConnector(storage);
   //ConfigMQTT configMQTT;
   //Runner runner;
