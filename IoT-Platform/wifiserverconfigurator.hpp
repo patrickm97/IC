@@ -15,15 +15,12 @@ class WifiServerConfigurator {
         WifiServerConfigurator(LocalStorage &storage): storage(storage) {
         }
 
-        bool isDeviceConfigured(string deviceId) {
-            if (this->storage.isDeviceSaved(deviceId)) {
-                return true;
-            } 
-            return false;
+        bool isDeviceConfigured() {
+            return this->storage.isDeviceConfigured();
         }
 
-        void configureServer(string deviceId) {
-            this->storage.saveData(deviceId);
+        void configureServer(const string deviceId, const string ssid, const string pass) {
+            this->storage.saveData(deviceId, ssid, pass);
         }
 
         string loadData(string devideId) {

@@ -18,21 +18,21 @@ WebConnector webConnector(storage);
 WifiClient wifiClient;
 ConfigMqtt configMqtt(wifiClient, storage);
 bool preLoopExecuted = false;
+const string deviceId = "esp32", ssid = "10.42.0.0:5901", pass = "lab@iiot";
 
-void preLoop(){
-    Serial.println("Entered preloop");
-    string deviceId = "arduino";
-    if (!webConnector.isDeviceConfigured(deviceId)) {
-        Serial.println("device not found, configuring...");
-        webConnector.configureServer("arduino");
-    } else {
+void preLoop() {
+    if (!webConnector.isDeviceConfigured()) {
+        Serial.println("device not configured, configuring...");
+        webConnector.configureServer(deviceId, ssid, pass);
+    } 
+    else {
         string loadedData = webConnector.loadData(deviceId);
         int len = loadedData.length();
         char char_array[len+1];
         strcpy(char_array, loadedData.c_str());
         Serial.println(char_array);
     }
-    preLoopExecuted=true;
+    preLoopExecuted = true;
 }
 
 
@@ -43,18 +43,13 @@ void setup() {
 }
 
 void loop() {
-    if (!preLoopExecuted){
-        Serial.println("print");
-        preLoop();
-
-        int value_stored = EEPROM.read(0);
-        if (value_stored != 1) {
-            EEPROM.write(0, 1);
-            EEPROM.commit();
-            Serial.println("Value 1 written in flash at memory postition 0");
-        }
+    if (!preLoopExecuted) {
+        delay(5000);
+        EEPROM.write(0, 0);    
+        delay(3000);
+        preLoop();        
     }
     Serial.print("value in flash memory: ");
     Serial.println(EEPROM.read(0));
-    delay(5000);
+    delay(30000);
 }

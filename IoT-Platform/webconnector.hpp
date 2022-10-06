@@ -14,15 +14,12 @@ class WebConnector {
         WebConnector(LocalStorage &storage) : storage(storage), wifiServer(storage) {
         }
 
-        bool isDeviceConfigured(string deviceId) {
-            if (this->wifiServer.isDeviceConfigured(deviceId)) {
-                return true;
-            }
-            wifiServer.configureServer(deviceId);
+        bool isDeviceConfigured() {
+            return this->wifiServer.isDeviceConfigured();
         }
 
-        void configureServer(string deviceId) {
-            this->wifiServer.configureServer(deviceId);
+        void configureServer(const string deviceId, const string ssid, const string pass) {
+            this->wifiServer.configureServer(deviceId, ssid, pass);
         }
 
         string loadData(string devideId) {
