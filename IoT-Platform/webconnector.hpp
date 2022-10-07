@@ -23,7 +23,8 @@ class WebConnector {
         }
 
         string loadData(string devideId) {
-            return wifiServer.loadData(devideId);
+            return "";
+            //return wifiServer.loadData(devideId);
         }
 };
 

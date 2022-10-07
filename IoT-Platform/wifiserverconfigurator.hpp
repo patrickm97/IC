@@ -20,11 +20,12 @@ class WifiServerConfigurator {
         }
 
         void configureServer(const string deviceId, const string ssid, const string pass) {
-            this->storage.saveData(deviceId, ssid, pass);
+            //this->storage.saveData(deviceId, ssid, pass);
         }
 
-        string loadData(string devideId) {
-            return storage.loadData(devideId);
+        String loadData(string devideId) {
+            return String("teste");
+            //return storage.loadData(devideId);
         }
 };
 
