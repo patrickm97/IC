@@ -1,7 +1,6 @@
 #ifndef WEBCONNECTOR_HPP
 #define WEBCONNECTOR_HPP
 
-#include <string>
 #include "wifiserverconfigurator.hpp"
 using namespace std;
 
@@ -18,13 +17,13 @@ class WebConnector {
             return this->wifiServer.isDeviceConfigured();
         }
 
-        void configureServer(const string deviceId, const string ssid, const string pass) {
-            this->wifiServer.configureServer(deviceId, ssid, pass);
+        void saveData(String deviceId, String ssid, String password, String mqttHost, 
+                      String mqttPass, String topic) {
+            this->wifiServer.saveData(deviceId, ssid, password, mqttHost, mqttPass, topic);
         }
 
-        string loadData(string devideId) {
-            return "";
-            //return wifiServer.loadData(devideId);
+        String loadData(bool mqttPassExists) {
+            return this->wifiServer.loadData(mqttPassExists);
         }
 };
 

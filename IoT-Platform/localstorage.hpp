@@ -3,7 +3,6 @@
 
 #include <iostream>
 #include <Arduino.h>
-#include <string>
 #include <cstring>
 #include <vector>
 #include <algorithm>
@@ -15,14 +14,14 @@ using namespace std;
 // 255.255.255.255:1000 -> len = 20
 #define START_POSITION_DEVICEID 1
 #define START_POSITION_SSID 13
-#define START_POSITION_PASS 35
+#define START_POSITION_PASSWORD 35
 #define START_POSITION_MQTTHOST 51
 #define START_POSITION_MQTTPASS 72
 #define START_POSITION_TOPIC 88
 
 #define LENGTH_LIMIT_DEVICEID 10
 #define LENGTH_LIMIT_SSID 20
-#define LENGTH_LIMIT_PASS 15
+#define LENGTH_LIMIT_PASSWORD 15
 #define LENGTH_LIMIT_MQTTHOST 20
 #define LENGTH_LIMIT_MQTTPASS 15
 #define LENGTH_LIMIT_TOPIC 10
@@ -32,72 +31,155 @@ class LocalStorage
 private:
 public:
     /* reserved addresses in flash memory:
-    *  deviceId: address 1 + length (length limit of 10) + /0 (1 to 12)
-    *  ssid: address 13 + length (length limit of 20) + /0 (13 to 49)
-    *  pass: address 50 + length (length limit of 15) + /0 (50 to 65)
-    *  mqttHost: address 50 + length (length limit of 15) + /0 (50 to 65)
+    *  deviceId: address 1 + length + /0 (1 to 12)
+    *  ssid: address 13 + length + /0 (13 to 49)
+    *  password: address 50 + length + /0 (50 to 65)
+    *  mqttHost: address 66 + length + /0 (66 to 87)
+    *  mqttPass: address 88 + length + /0 (88 to 104)
+    *  topic: address 105 + length + /0 (105 to 116)
     */
-    void saveData(String deviceId, String ssid, String pass, String mqttHost, String mqttPass, String topic) {
+    void saveData(String deviceId, String ssid, String password, String mqttHost, 
+                  String mqttPass, String topic) {
         saveDeviceId(deviceId);
         saveSsid(ssid);
-        savePassword(pass);
+        savePassword(password);
         saveMqttHost(mqttHost);
         if (mqttPass.length() > 0)
             saveMqttPass(mqttPass);
         saveTopic(topic);
     }
 
-    String loadDeviceID()
-    {
+    String loadData(bool mqttPassExists) {
+        String dataReturn;
+        if (mqttPassExists)
+            dataReturn = "Device ID: " + loadDeviceID() + ", SSID: " + loadSsid() + ", Password: " 
+                            + loadPassword() + ", MQTT Host: " + loadMqttHost() + ", MQTT Password: " 
+                            + loadMqttPass() + ", Topic: " + loadTopic();
+        else
+            dataReturn = "Device ID: " + loadDeviceID() + ", SSID: " + loadSsid() + ", Password: " 
+                            + loadPassword() + ", MQTT Host: " + loadMqttHost() + ", MQTT Password: " 
+                            + "[empty] , Topic: " + loadTopic();
+        return dataReturn;
+    }
+
+    String loadDeviceID() {
         return EEPROM.readString(START_POSITION_DEVICEID);
     }
 
-    void saveDeviceId(String deviceId)
-    {
-        if (isStringEmpty(deviceId))
-        {
+    void saveDeviceId(String deviceId) {
+        if (deviceId.isEmpty()) {
             Serial.println("Exception, deviceId cannot be empty");
             return;
         }
-        if (deviceId.length() > LENGTH_LIMIT_DEVICEID)
-        {
-            Serial.println("Exception, deviceId cannot be greater than 10");
+        if (deviceId.length() > LENGTH_LIMIT_DEVICEID) {
+            lengthErrorMessage(deviceId, LENGTH_LIMIT_DEVICEID);
             return;
         }
         EEPROM.writeString(START_POSITION_DEVICEID, deviceId);
-        Serial.println("Device ID registered successfully");
+        successMessage(deviceId);
     }
 
-    String loadSsid()
-    {
+    String loadSsid() {
         return EEPROM.readString(START_POSITION_SSID);
     }
 
-    void saveSsid(String ssid)
-    {
-        if (isStringEmpty(ssid))
-        {
+    void saveSsid(String ssid) {
+        if (ssid.isEmpty()) {
             Serial.println("Exception, ssid cannot be empty");
             return;
         }
-        if (deviceId.length() > LENGTH_LIMIT_SSID)
-        {
-            Serial.println("Exception, ssid cannot be greater than 10");
+        if (ssid.length() > LENGTH_LIMIT_SSID) {
+            lengthErrorMessage(ssid, LENGTH_LIMIT_SSID);
             return;
         }
         EEPROM.writeString(START_POSITION_SSID, ssid);
-        Serial.println("Ssid registered successfully");
+        successMessage(ssid);
+    }
+
+    String loadPassword() {
+        return EEPROM.readString(START_POSITION_PASSWORD);
+    }
+
+    void savePassword(String password) {
+        if (password.isEmpty()) {
+            Serial.println("Exception, password cannot be empty");
+            return;
+        }
+        if (password.length() > LENGTH_LIMIT_PASSWORD) {
+            lengthErrorMessage(password, LENGTH_LIMIT_PASSWORD);
+            return;
+        }
+        EEPROM.writeString(START_POSITION_PASSWORD, password);
+        successMessage(password);
+    }
+
+    String loadMqttHost() {
+        return EEPROM.readString(START_POSITION_MQTTHOST);
+    }
+
+    void saveMqttHost(String mqttHost) {
+        if (mqttHost.isEmpty()) {
+            Serial.println("Exception, mqttHost cannot be empty");
+            return;
+        }
+        if (mqttHost.length() > LENGTH_LIMIT_MQTTHOST) {
+            lengthErrorMessage(mqttHost, LENGTH_LIMIT_MQTTHOST);
+            return;
+        }
+        EEPROM.writeString(START_POSITION_MQTTHOST, mqttHost);
+        successMessage(mqttHost);
+    }
+
+    String loadMqttPass() {
+        return EEPROM.readString(START_POSITION_MQTTPASS);
+    }
+
+    void saveMqttPass(String mqttPass) {
+        if (mqttPass.length() > LENGTH_LIMIT_MQTTPASS) {
+            lengthErrorMessage(mqttPass, LENGTH_LIMIT_MQTTPASS);
+            return;
+        }
+        EEPROM.writeString(START_POSITION_MQTTPASS, mqttPass);
+        successMessage(mqttPass);
+    }
+
+    String loadTopic()
+    {
+        return EEPROM.readString(START_POSITION_MQTTHOST);
+    }
+
+    void saveTopic(String topic)
+    {
+        if (topic.isEmpty())
+        {
+            Serial.println("Exception, topic cannot be empty");
+            return;
+        }
+        if (topic.length() > LENGTH_LIMIT_TOPIC)
+        {
+            lengthErrorMessage(topic, LENGTH_LIMIT_TOPIC);
+            return;
+        }
+        EEPROM.writeString(START_POSITION_TOPIC, topic);
+        successMessage(topic);
     }
     
-    bool isDeviceConfigured()
-    {
+    bool isDeviceConfigured() {
         if (EEPROM.read(MAIN_POSITION_CONFIGURED) == 1)
             return true;
         return false;
     }
 
-    bool isStringEmpty(String word) {
-        return word.isEmpty();
+    void successMessage(String word) {
+        Serial.print(word);
+        Serial.println(" registered successfully");
+    }
+
+    void lengthErrorMessage(String word, int length) {
+        Serial.print("Exception ");
+        Serial.print(word);
+        Serial.print(" cannot be greater than ");
+        Serial.print(length);
     }
 };
 

@@ -19,13 +19,13 @@ class WifiServerConfigurator {
             return this->storage.isDeviceConfigured();
         }
 
-        void configureServer(const string deviceId, const string ssid, const string pass) {
-            //this->storage.saveData(deviceId, ssid, pass);
+        void saveData(String deviceId, String ssid, String password, String mqttHost, 
+                      String mqttPass, String topic) {
+            this->storage.saveData(deviceId, ssid, password, mqttHost, mqttPass, topic);
         }
 
-        String loadData(string devideId) {
-            return String("teste");
-            //return storage.loadData(devideId);
+        String loadData(bool mqttPassExists) {
+            return this->storage.loadData(mqttPassExists);
         }
 };
 
