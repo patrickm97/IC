@@ -29,6 +29,7 @@ using namespace std;
 class LocalStorage
 {
 private:
+    char outString[100];
 public:
     /* reserved addresses in flash memory:
     *  deviceId: address 1 + length + /0 (1 to 12)
@@ -62,8 +63,10 @@ public:
         return dataReturn;
     }
 
-    String loadDeviceID() {
-        return EEPROM.readString(START_POSITION_DEVICEID);
+    String loadDeviceID()
+    {
+        EEPROM.readString(START_POSITION_DEVICEID, outString, LENGTH_LIMIT_DEVICEID);
+        return outString;
     }
 
     void saveDeviceId(String deviceId) {
@@ -75,12 +78,13 @@ public:
             lengthErrorMessage(deviceId, LENGTH_LIMIT_DEVICEID);
             return;
         }
-        EEPROM.writeString(START_POSITION_DEVICEID, deviceId);
+        EEPROM.writeString(START_POSITION_DEVICEID, deviceId.c_str());
         successMessage(deviceId);
     }
 
     String loadSsid() {
-        return EEPROM.readString(START_POSITION_SSID);
+        EEPROM.readString(START_POSITION_SSID, outString, LENGTH_LIMIT_SSID);
+        return outString;
     }
 
     void saveSsid(String ssid) {
@@ -92,12 +96,13 @@ public:
             lengthErrorMessage(ssid, LENGTH_LIMIT_SSID);
             return;
         }
-        EEPROM.writeString(START_POSITION_SSID, ssid);
+        EEPROM.writeString(START_POSITION_SSID, ssid.c_str());
         successMessage(ssid);
     }
 
     String loadPassword() {
-        return EEPROM.readString(START_POSITION_PASSWORD);
+        EEPROM.readString(START_POSITION_PASSWORD, outString, LENGTH_LIMIT_PASSWORD);
+        return outString;
     }
 
     void savePassword(String password) {
@@ -109,12 +114,13 @@ public:
             lengthErrorMessage(password, LENGTH_LIMIT_PASSWORD);
             return;
         }
-        EEPROM.writeString(START_POSITION_PASSWORD, password);
+        EEPROM.writeString(START_POSITION_PASSWORD, password.c_str());
         successMessage(password);
     }
 
     String loadMqttHost() {
-        return EEPROM.readString(START_POSITION_MQTTHOST);
+        EEPROM.readString(START_POSITION_MQTTHOST, outString, LENGTH_LIMIT_MQTTHOST);
+        return outString;
     }
 
     void saveMqttHost(String mqttHost) {
@@ -126,12 +132,13 @@ public:
             lengthErrorMessage(mqttHost, LENGTH_LIMIT_MQTTHOST);
             return;
         }
-        EEPROM.writeString(START_POSITION_MQTTHOST, mqttHost);
+        EEPROM.writeString(START_POSITION_MQTTHOST, mqttHost.c_str());
         successMessage(mqttHost);
     }
 
     String loadMqttPass() {
-        return EEPROM.readString(START_POSITION_MQTTPASS);
+        EEPROM.readString(START_POSITION_MQTTPASS, outString, LENGTH_LIMIT_MQTTPASS);
+        return outString;
     }
 
     void saveMqttPass(String mqttPass) {
@@ -139,13 +146,14 @@ public:
             lengthErrorMessage(mqttPass, LENGTH_LIMIT_MQTTPASS);
             return;
         }
-        EEPROM.writeString(START_POSITION_MQTTPASS, mqttPass);
+        EEPROM.writeString(START_POSITION_MQTTPASS, mqttPass.c_str());
         successMessage(mqttPass);
     }
 
     String loadTopic()
     {
-        return EEPROM.readString(START_POSITION_MQTTHOST);
+        EEPROM.readString(START_POSITION_TOPIC, outString, LENGTH_LIMIT_TOPIC);
+        return outString;
     }
 
     void saveTopic(String topic)
@@ -160,7 +168,7 @@ public:
             lengthErrorMessage(topic, LENGTH_LIMIT_TOPIC);
             return;
         }
-        EEPROM.writeString(START_POSITION_TOPIC, topic);
+        EEPROM.writeString(START_POSITION_TOPIC, topic.c_str());
         successMessage(topic);
     }
     
