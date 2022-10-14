@@ -15,7 +15,7 @@ LocalStorage storage;
 WebConnector webConnector(storage);
 WifiClient wifiClient;
 ConfigMqtt configMqtt(wifiClient, storage);
-bool preLoopExecuted = false, mqttPassExists = false;;
+bool preLoopExecuted = false, mqttPassExists = false, execute = true;
 String deviceId = "esp32", ssid = "10.42.0.0:5901", password = "lab@iiot", 
        mqttHost = "190.186.5.1:8000", mqttPass = "pass", topic = "dev-iot";
 
@@ -48,23 +48,25 @@ void setup()
 }
 
 int v = 0;
-void testaGravaString(){
+void testaGravaString()
+{
     v++;
     String s = "blablabla";
     s.concat(v);
     EEPROM.writeString(1, s.c_str());
     Serial.printf("%s %s\n", "Gravado: ", s);
+    EEPROM.commit();
 }
 
-void testaLeiaString(){
+void testaLeiaString()
+{
     char teste[100];
     EEPROM.readString(1, teste, 100);
     Serial.printf("%s %s\n", "Memoria", teste);
-
 }
 
-
-void loopTeste(){
+void loop2()
+{
     String s = Serial.readString();
     Serial.printf("%s%s%s\n","->",s,"<-");
     if (s.compareTo("w\n") == 0){
@@ -75,14 +77,15 @@ void loopTeste(){
     }
 }
 
-
-void loop() {
+void loop()
+{
     if (!preLoopExecuted)
     {
         delay(2000);
         //EEPROM.write(0, 0);
         delay(1000);
         preLoop();
+        Serial.printf("Pos 0: %d\n", EEPROM.read(0));
     }
     
     Serial.println("\n-------------------------Info in flash memory-------------------------");

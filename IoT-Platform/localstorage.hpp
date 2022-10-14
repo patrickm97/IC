@@ -29,7 +29,6 @@ using namespace std;
 class LocalStorage
 {
 private:
-    char outString[100];
 public:
     /* reserved addresses in flash memory:
     *  deviceId: address 1 + length + /0 (1 to 12)
@@ -48,24 +47,38 @@ public:
         if (mqttPass.length() > 0)
             saveMqttPass(mqttPass);
         saveTopic(topic);
+        EEPROM.write(0, 1);
+        EEPROM.commit();
     }
 
     String loadData(bool mqttPassExists) {
-        String dataReturn;
+        String dataReturn = "";
         if (mqttPassExists)
-            dataReturn = "Device ID: " + loadDeviceID() + ", SSID: " + loadSsid() + ", Password: " 
-                            + loadPassword() + ", MQTT Host: " + loadMqttHost() + ", MQTT Password: " 
-                            + loadMqttPass() + ", Topic: " + loadTopic();
+            dataReturn =+ "Device ID: " + loadInfo(START_POSITION_DEVICEID, LENGTH_LIMIT_DEVICEID) 
+                          + ", SSID: " + loadInfo(START_POSITION_SSID, LENGTH_LIMIT_SSID) 
+                          + ", Password: " + loadInfo(START_POSITION_PASSWORD, LENGTH_LIMIT_PASSWORD)  
+                          + ", MQTT Host: " + loadInfo(START_POSITION_MQTTHOST, LENGTH_LIMIT_MQTTHOST)  
+                          + ", MQTT Password: " + loadInfo(START_POSITION_MQTTPASS, LENGTH_LIMIT_MQTTPASS)  
+                          + ", Topic: " + loadInfo(START_POSITION_TOPIC, LENGTH_LIMIT_TOPIC) ;
         else
-            dataReturn = "Device ID: " + loadDeviceID() + ", SSID: " + loadSsid() + ", Password: " 
-                            + loadPassword() + ", MQTT Host: " + loadMqttHost() + ", MQTT Password: " 
-                            + "[empty] , Topic: " + loadTopic();
+            dataReturn =+ "Device ID: " + loadInfo(START_POSITION_DEVICEID, LENGTH_LIMIT_DEVICEID) 
+                          + ", SSID: " + loadInfo(START_POSITION_SSID, LENGTH_LIMIT_SSID) 
+                          + ", Password: " + loadInfo(START_POSITION_PASSWORD, LENGTH_LIMIT_PASSWORD) 
+                          + ", MQTT Host: " + loadInfo(START_POSITION_MQTTHOST, LENGTH_LIMIT_MQTTHOST) 
+                          + ", MQTT Password: [empty] , Topic: " 
+                          + loadInfo(START_POSITION_TOPIC, LENGTH_LIMIT_TOPIC);
         return dataReturn;
     }
 
-    String loadDeviceID()
+    String loadInfo(int startPos, int lengthLimit)
     {
-        EEPROM.readString(START_POSITION_DEVICEID, outString, LENGTH_LIMIT_DEVICEID);
+        char outCharArray[lengthLimit];
+        EEPROM.readString(startPos, outCharArray, lengthLimit);
+        String outString = "";
+        for (int i = 0; i < strlen(outCharArray); i++)
+        {
+            outString = outString + outCharArray[i];
+        }
         return outString;
     }
 
@@ -82,11 +95,6 @@ public:
         successMessage(deviceId);
     }
 
-    String loadSsid() {
-        EEPROM.readString(START_POSITION_SSID, outString, LENGTH_LIMIT_SSID);
-        return outString;
-    }
-
     void saveSsid(String ssid) {
         if (ssid.isEmpty()) {
             Serial.println("Exception, ssid cannot be empty");
@@ -98,11 +106,6 @@ public:
         }
         EEPROM.writeString(START_POSITION_SSID, ssid.c_str());
         successMessage(ssid);
-    }
-
-    String loadPassword() {
-        EEPROM.readString(START_POSITION_PASSWORD, outString, LENGTH_LIMIT_PASSWORD);
-        return outString;
     }
 
     void savePassword(String password) {
@@ -118,11 +121,6 @@ public:
         successMessage(password);
     }
 
-    String loadMqttHost() {
-        EEPROM.readString(START_POSITION_MQTTHOST, outString, LENGTH_LIMIT_MQTTHOST);
-        return outString;
-    }
-
     void saveMqttHost(String mqttHost) {
         if (mqttHost.isEmpty()) {
             Serial.println("Exception, mqttHost cannot be empty");
@@ -136,8 +134,15 @@ public:
         successMessage(mqttHost);
     }
 
-    String loadMqttPass() {
-        EEPROM.readString(START_POSITION_MQTTPASS, outString, LENGTH_LIMIT_MQTTPASS);
+    String loadMqttPass()
+    {
+        char outCharArray[LENGTH_LIMIT_MQTTPASS];
+        EEPROM.readString(START_POSITION_MQTTPASS, outCharArray, LENGTH_LIMIT_MQTTPASS);
+        String outString = "";
+        for (int i = 0; i < strlen(outCharArray); i++)
+        {
+            outString = outString + outCharArray[i];
+        }
         return outString;
     }
 
@@ -148,12 +153,6 @@ public:
         }
         EEPROM.writeString(START_POSITION_MQTTPASS, mqttPass.c_str());
         successMessage(mqttPass);
-    }
-
-    String loadTopic()
-    {
-        EEPROM.readString(START_POSITION_TOPIC, outString, LENGTH_LIMIT_TOPIC);
-        return outString;
     }
 
     void saveTopic(String topic)
