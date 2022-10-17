@@ -92,6 +92,8 @@
                 "/home/labiot/.arduino15/packages/esp32/hardware/esp32/1.0.6/tools/sdk/include/fb_gfx",
                 "/home/labiot/.arduino15/packages/esp32/hardware/esp32/1.0.6/cores/esp32",
                 "/home/labiot/.arduino15/packages/esp32/hardware/esp32/1.0.6/variants/esp32",
+                "/home/labiot/Arduino/libraries/ArduinoJson/src",
+                "/home/labiot/Arduino/libraries/PubSubClient/src",
                 "/home/labiot/.arduino15/packages/esp32/hardware/esp32/1.0.6/libraries/EEPROM/src",
                 "/home/labiot/.arduino15/packages/esp32/hardware/esp32/1.0.6/libraries/WiFi/src",
                 "/home/labiot/.arduino15/packages/esp32/tools/xtensa-esp32-elf-gcc/1.22.0-97-gc752ad5-5.2.0/xtensa-esp32-elf/include/c++/5.2.0",

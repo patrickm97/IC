@@ -3,7 +3,7 @@
 #include <WiFi.h>
 #include "localstorage.hpp"
 #include "webconnector.hpp"
-#include "wificlient.hpp"
+#include "wificonnector.hpp""
 #include "configmqtt.hpp"
 
 using namespace std;
@@ -13,16 +13,15 @@ using namespace std;
 // declarations
 LocalStorage storage;
 WebConnector webConnector(storage);
-WifiClient wifiClient;
-ConfigMqtt configMqtt(wifiClient, storage);
-bool preLoopExecuted = false, mqttPassExists = false, execute = true;
+WifiConnector wifiConnector;
+ConfigMqtt configMqtt(wifiConnector, storage);
+bool preLoopExecuted = false, mqttPassExists = false, wifiConnected = false;
 String deviceId = "esp32", ssid = "10.42.0.0:5901", password = "lab@iiot", 
        mqttHost = "190.186.5.1:8000", mqttPass = "pass", topic = "dev-iot";
-
-void printInfo(bool mqttPassExists) 
-{
-    webConnector.loadData(mqttPassExists);
-}
+const char* wifiSsid = "10.42.0.1:5901";
+const char* wifiPassword = "lab@iiot";
+char mqttTopic[50] = "dev";
+const uint16_t socket = 1883;
 
 void preLoop() {
     if (!webConnector.isDeviceConfigured()) 
@@ -33,7 +32,7 @@ void preLoop() {
     else
     {
         Serial.println("Device already registered, printing info...");
-        delay(2000);
+        delay(1000);
     }
     if (!storage.loadMqttPass().isEmpty())
         mqttPassExists = true;
@@ -44,7 +43,7 @@ void setup()
 {
     EEPROM.begin(EEPROM_SIZE);
     Serial.begin(115200);
-    delay(3000);
+    delay(1000);
 }
 
 int v = 0;
@@ -82,14 +81,22 @@ void loop()
     if (!preLoopExecuted)
     {
         delay(2000);
-        //EEPROM.write(0, 0);
+        //EEPROM.write(0, 0);flash has 512 positions (0 to 511)
         delay(1000);
         preLoop();
-        Serial.printf("Pos 0: %d\n", EEPROM.read(0));
+        delay(1000);
+        Serial.println("\n-------------------------Info in flash memory-------------------------");
+        Serial.println(webConnector.loadData(mqttPassExists));
+        Serial.println("");
+        delay(1000);
     }
     
-    Serial.println("\n-------------------------Info in flash memory-------------------------");
-    Serial.println(webConnector.loadData(mqttPassExists));
+    if (!wifiConnected)
+    {
+        configMqtt.connectMqtt();
+        wifiConnected = true;
+    }
+    
     /*
     for (int i = 0; i < 512; i++)
     {

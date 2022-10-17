@@ -82,6 +82,33 @@ public:
         return outString;
     }
 
+    char* loadTopic() {
+        char outCharArray[LENGTH_LIMIT_TOPIC];
+        EEPROM.readString(START_POSITION_TOPIC, outCharArray, LENGTH_LIMIT_TOPIC);
+        return outCharArray;
+    }
+
+    const char* loadSsid() {
+        char outCharArray[LENGTH_LIMIT_SSID];
+        EEPROM.readString(START_POSITION_SSID, outCharArray, LENGTH_LIMIT_SSID);
+        const char* outConstChar = outCharArray;
+        return outConstChar;
+    }
+
+    const char* loadPassword() {
+        char outCharArray[LENGTH_LIMIT_PASSWORD];
+        EEPROM.readString(START_POSITION_PASSWORD, outCharArray, LENGTH_LIMIT_PASSWORD);
+        const char* outConstChar = outCharArray;
+        return outConstChar;
+    }
+
+    const char* loadMqttHost() {
+        char outCharArray[LENGTH_LIMIT_MQTTHOST];
+        EEPROM.readString(START_POSITION_MQTTHOST, outCharArray, LENGTH_LIMIT_MQTTHOST);
+        const char* outConstChar = outCharArray;
+        return outConstChar;
+    }
+
     void saveDeviceId(String deviceId) {
         if (deviceId.isEmpty()) {
             Serial.println("Exception, deviceId cannot be empty");
