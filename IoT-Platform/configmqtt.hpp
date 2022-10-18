@@ -10,10 +10,9 @@ class ConfigMqtt {
         Mqtt mqtt;
         LocalStorage &storage;
         WifiConnector &wifiConnector;
-        char topic[50] = "dev";
 
     public:
-        ConfigMqtt(WifiConnector &wifiConnector, LocalStorage &storage, const char* ssid, const char* pass, char* ) : 
+        ConfigMqtt(WifiConnector &wifiConnector, LocalStorage &storage) : 
         wifiConnector(wifiConnector), mqtt(wifiConnector), storage(storage) {  
         }
 
@@ -21,9 +20,9 @@ class ConfigMqtt {
             mqtt.displayWifiNetworks();
         }
     
-        void connectMqtt(const char* ssid, const char* password, char* topic, const uint16_t socket)
+        void connectMqtt(const char* ssid, const char* password, char* topic, char* mqttHost , int socket, char* mqttPass)
         {
-            mqtt.connectMQTT(ssid, password, topic, socket);
+            mqtt.connectMQTT(ssid, password, topic, mqttHost, socket, mqttPass);
         }
 };
 

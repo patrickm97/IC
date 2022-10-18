@@ -3,7 +3,7 @@
 #include <WiFi.h>
 #include "localstorage.hpp"
 #include "webconnector.hpp"
-#include "wificonnector.hpp""
+#include "wificonnector.hpp"
 #include "configmqtt.hpp"
 
 using namespace std;
@@ -18,10 +18,7 @@ ConfigMqtt configMqtt(wifiConnector, storage);
 bool preLoopExecuted = false, mqttPassExists = false, wifiConnected = false;
 String deviceId = "esp32", ssid = "10.42.0.0:5901", password = "lab@iiot", 
        mqttHost = "190.186.5.1:8000", mqttPass = "pass", topic = "dev-iot";
-const char* wifiSsid = "10.42.0.1:5901";
-const char* wifiPassword = "lab@iiot";
-char mqttTopic[50] = "dev";
-const uint16_t socket = 1883;
+const uint16_t socket = 0;
 
 void preLoop() {
     if (!webConnector.isDeviceConfigured()) 
@@ -34,7 +31,7 @@ void preLoop() {
         Serial.println("Device already registered, printing info...");
         delay(1000);
     }
-    if (!storage.loadMqttPass().isEmpty())
+    if (!storage.loadMqttPass(true).isEmpty())
         mqttPassExists = true;
     preLoopExecuted = true;
 }
@@ -93,7 +90,7 @@ void loop()
     
     if (!wifiConnected)
     {
-        configMqtt.connectMqtt();
+        configMqtt.connectMqtt(storage.loadSsid(), storage.loadPassword(), storage.loadTopic(), storage.loadMqttHost(), storage.loadSocket(), storage.loadMqttPass());
         wifiConnected = true;
     }
     

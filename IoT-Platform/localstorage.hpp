@@ -40,14 +40,15 @@ public:
     */
     void saveData(String deviceId, String ssid, String password, String mqttHost, 
                   String mqttPass, String topic) {
-        saveDeviceId(deviceId);
-        saveSsid(ssid);
-        savePassword(password);
-        saveMqttHost(mqttHost);
+        saveInfo(deviceId, START_POSITION_DEVICEID, LENGTH_LIMIT_DEVICEID);
+        saveInfo(ssid, START_POSITION_SSID, LENGTH_LIMIT_SSID);
+        saveInfo(password, START_POSITION_PASSWORD, LENGTH_LIMIT_PASSWORD);
+        saveInfo(mqttHost, START_POSITION_MQTTHOST, LENGTH_LIMIT_MQTTHOST);
         if (mqttPass.length() > 0)
-            saveMqttPass(mqttPass);
-        saveTopic(topic);
+            saveInfo(mqttPass, START_POSITION_MQTTPASS, LENGTH_LIMIT_MQTTPASS);
+        saveInfo(topic, START_POSITION_TOPIC, LENGTH_LIMIT_TOPIC);
         EEPROM.write(0, 1);
+        delay(50);
         EEPROM.commit();
     }
 
@@ -102,106 +103,54 @@ public:
         return outConstChar;
     }
 
-    const char* loadMqttHost() {
+    char* loadMqttHost() {
         char outCharArray[LENGTH_LIMIT_MQTTHOST];
         EEPROM.readString(START_POSITION_MQTTHOST, outCharArray, LENGTH_LIMIT_MQTTHOST);
-        const char* outConstChar = outCharArray;
-        return outConstChar;
+        return outCharArray;
+    }
+    
+    int loadSocket() {
+        char* mqttHost = loadMqttHost();
+        String strMqttHost = mqttHost;
+        int mqttHostLen = strMqttHost.length();
+        int socketIdx = mqttHostLen - 5;
+        String subMqttHost = strMqttHost.substring(socketIdx);
+        char charSocket[4];
+        strcpy(charSocket, subMqttHost.c_str());
+        int socket = atoi(charSocket);
+        return socket;
     }
 
-    void saveDeviceId(String deviceId) {
-        if (deviceId.isEmpty()) {
-            Serial.println("Exception, deviceId cannot be empty");
-            return;
-        }
-        if (deviceId.length() > LENGTH_LIMIT_DEVICEID) {
-            lengthErrorMessage(deviceId, LENGTH_LIMIT_DEVICEID);
-            return;
-        }
-        EEPROM.writeString(START_POSITION_DEVICEID, deviceId.c_str());
-        successMessage(deviceId);
-    }
-
-    void saveSsid(String ssid) {
-        if (ssid.isEmpty()) {
-            Serial.println("Exception, ssid cannot be empty");
-            return;
-        }
-        if (ssid.length() > LENGTH_LIMIT_SSID) {
-            lengthErrorMessage(ssid, LENGTH_LIMIT_SSID);
-            return;
-        }
-        EEPROM.writeString(START_POSITION_SSID, ssid.c_str());
-        successMessage(ssid);
-    }
-
-    void savePassword(String password) {
-        if (password.isEmpty()) {
-            Serial.println("Exception, password cannot be empty");
-            return;
-        }
-        if (password.length() > LENGTH_LIMIT_PASSWORD) {
-            lengthErrorMessage(password, LENGTH_LIMIT_PASSWORD);
-            return;
-        }
-        EEPROM.writeString(START_POSITION_PASSWORD, password.c_str());
-        successMessage(password);
-    }
-
-    void saveMqttHost(String mqttHost) {
-        if (mqttHost.isEmpty()) {
-            Serial.println("Exception, mqttHost cannot be empty");
-            return;
-        }
-        if (mqttHost.length() > LENGTH_LIMIT_MQTTHOST) {
-            lengthErrorMessage(mqttHost, LENGTH_LIMIT_MQTTHOST);
-            return;
-        }
-        EEPROM.writeString(START_POSITION_MQTTHOST, mqttHost.c_str());
-        successMessage(mqttHost);
-    }
-
-    String loadMqttPass()
+    char* loadMqttPass()
     {
         char outCharArray[LENGTH_LIMIT_MQTTPASS];
         EEPROM.readString(START_POSITION_MQTTPASS, outCharArray, LENGTH_LIMIT_MQTTPASS);
-        String outString = "";
-        for (int i = 0; i < strlen(outCharArray); i++)
-        {
-            outString = outString + outCharArray[i];
-        }
-        return outString;
+        return outCharArray;
     }
 
-    void saveMqttPass(String mqttPass) {
-        if (mqttPass.length() > LENGTH_LIMIT_MQTTPASS) {
-            lengthErrorMessage(mqttPass, LENGTH_LIMIT_MQTTPASS);
-            return;
-        }
-        EEPROM.writeString(START_POSITION_MQTTPASS, mqttPass.c_str());
-        successMessage(mqttPass);
-    }
-
-    void saveTopic(String topic)
+    String loadMqttPass(bool str)
     {
-        if (topic.isEmpty())
-        {
-            Serial.println("Exception, topic cannot be empty");
-            return;
-        }
-        if (topic.length() > LENGTH_LIMIT_TOPIC)
-        {
-            lengthErrorMessage(topic, LENGTH_LIMIT_TOPIC);
-            return;
-        }
-        EEPROM.writeString(START_POSITION_TOPIC, topic.c_str());
-        successMessage(topic);
+        String outString = loadMqttPass();
+        return outString;
     }
     
     bool isDeviceConfigured() {
         if (EEPROM.read(MAIN_POSITION_CONFIGURED) == 1)
             return true;
         return false;
+    }
+
+    void saveInfo(String info, int startPos, int lengthLimit) {
+        if (info.isEmpty()) {
+            Serial.println("Exception, info cannot be empty");
+            return;
+        }
+        if (info.length() > lengthLimit) {
+            lengthErrorMessage(deviceId, lengthLimit);
+            return;
+        }
+        EEPROM.writeString(startPos, info.c_str());
+        successMessage(info);
     }
 
     void successMessage(String word) {
