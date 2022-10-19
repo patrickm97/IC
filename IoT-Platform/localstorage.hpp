@@ -146,7 +146,7 @@ public:
             return;
         }
         if (info.length() > lengthLimit) {
-            lengthErrorMessage(deviceId, lengthLimit);
+            lengthErrorMessage(info, lengthLimit);
             return;
         }
         EEPROM.writeString(startPos, info.c_str());

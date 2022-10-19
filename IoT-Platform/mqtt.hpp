@@ -26,7 +26,7 @@ class Mqtt {
 
     public:
         Mqtt(WifiConnector &wifiConnector) : wifiConnector(wifiConnector) {
-            this->tokenApi = "oi";
+            this->tokenApi = "token";
         }
 
         void displayWifiNetworks() {
@@ -50,7 +50,7 @@ class Mqtt {
         }
 
         void subscribe() {
-            cout << "subscribe";
+            MQTT.setCallback(mqtt_callback);
         }
 
         void publish() {
@@ -75,8 +75,18 @@ class Mqtt {
             }
         }
 
-        void callback() {
-            cout << "callback";
+        static void mqtt_callback(char* thing, byte* payload, unsigned int length) {
+            // variable to store the message received in subscribe
+            String message;
+            // save the message characters in message
+            for (int i = 0; i < length; i++) {
+                char c = (char)payload[i];
+                message += c;
+            }
+            
+            // TODO - handle message received
+            Serial.print("Message received in subscribe: ");
+            Serial.println(message);
         }
 
         

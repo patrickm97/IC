@@ -12,8 +12,8 @@ using namespace std;
 
 // declarations
 LocalStorage storage;
-WebConnector webConnector(storage);
 WifiConnector wifiConnector;
+WebConnector webConnector(wifiConnector, storage);
 ConfigMqtt configMqtt(wifiConnector, storage);
 bool preLoopExecuted = false, mqttPassExists = false, wifiConnected = false;
 String deviceId = "esp32", ssid = "10.42.0.0:5901", password = "lab@iiot", 
@@ -21,10 +21,11 @@ String deviceId = "esp32", ssid = "10.42.0.0:5901", password = "lab@iiot",
 const uint16_t socket = 0;
 
 void preLoop() {
-    if (!webConnector.isDeviceConfigured()) 
+    if (webConnector.isDeviceConfigured()) 
     {
         Serial.println("Device not configured, configuring...");
-        webConnector.saveData(deviceId, ssid, password, mqttHost, mqttPass, topic);
+        webConnector.setupWebServer();
+        //webConnector.saveData(deviceId, ssid, password, mqttHost, mqttPass, topic);
     }
     else
     {
