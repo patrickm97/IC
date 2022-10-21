@@ -29,8 +29,16 @@ class WebConnector {
             return this->wifiServerConfigurator.loadData(mqttPassExists);
         }
 
-        void setupWebServer() {
-            wifiConnector.setupWebServer();
+        // void setupWebServer() {
+        //     wifiConnector.setupWebServer();
+        // }
+
+        // void handleWebServerClient() {
+        //     wifiConnector.handleWebServerClient();
+        // }
+
+        void connectWifiServer() {
+            wifiConnector.connectWifiServer();
         }
 };
 

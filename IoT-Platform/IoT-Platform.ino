@@ -24,12 +24,13 @@ void preLoop() {
     if (webConnector.isDeviceConfigured()) 
     {
         Serial.println("Device not configured, configuring...");
-        webConnector.setupWebServer();
+        webConnector.connectWifiServer();
+        //webConnector.setupWebServer();
         //webConnector.saveData(deviceId, ssid, password, mqttHost, mqttPass, topic);
     }
     else
     {
-        Serial.println("Device already registered, printing info...");
+        Serial.println("Device already registered, connecting to WiFi client...");
         delay(1000);
     }
     if (!storage.loadMqttPass(true).isEmpty())
@@ -42,6 +43,7 @@ void setup()
     EEPROM.begin(EEPROM_SIZE);
     Serial.begin(115200);
     delay(1000);
+    preLoop();
 }
 
 int v = 0;
@@ -74,14 +76,19 @@ void loop2()
     }
 }
 
-void loop()
+void loop(){
+    wifiConnector.handleWebServerClient();
+    delay(2);
+}
+
+void loop3()
 {
     if (!preLoopExecuted)
     {
         delay(2000);
         //EEPROM.write(0, 0);flash has 512 positions (0 to 511)
         delay(1000);
-        preLoop();
+        //preLoop();
         delay(1000);
         Serial.println("\n-------------------------Info in flash memory-------------------------");
         Serial.println(webConnector.loadData(mqttPassExists));
@@ -89,11 +96,11 @@ void loop()
         delay(1000);
     }
     
-    if (!wifiConnected)
-    {
-        configMqtt.connectMqtt(storage.loadSsid(), storage.loadPassword(), storage.loadTopic(), storage.loadMqttHost(), storage.loadSocket(), storage.loadMqttPass());
-        wifiConnected = true;
-    }
+    // if (!wifiConnected)
+    // {
+    //     configMqtt.connectMqtt(storage.loadSsid(), storage.loadPassword(), storage.loadTopic(), storage.loadMqttHost(), storage.loadSocket(), storage.loadMqttPass());
+    //     wifiConnected = true;
+    // }
     
     /*
     for (int i = 0; i < 512; i++)
@@ -105,6 +112,8 @@ void loop()
             Serial.println("");
         }  
     }
+    
+    webConnector.handleWebServerClient();
+    delay(2);
     */
-    delay(10000);
 }

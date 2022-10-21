@@ -5,6 +5,7 @@
 #include <string>
 #include <WiFi.h>
 #include <WiFiClient.h>
+
 #include <WebServer.h>
 #include <ESPmDNS.h>
 
@@ -12,16 +13,22 @@ using namespace std;
 
 class WifiConnector {
     private:
-        WiFiClient client;
+        //WiFiClient client;
         WebServer webServer;
-        bool connectedToWifi;
+        char serverSsid[100];
+        char serverPassword[20];
+        WiFiServer wifiServer;
 
     public:
         // constructor
-        WifiConnector() {
-            this->connectedToWifi = false;
+        // : webServer(80)
+        WifiConnector() : wifiServer() {
+            
+            int rcode = rand()%10000;
+            snprintf(this->serverSsid, 100, "%s%05d", "IoTAgro",rcode);
+            snprintf(this->serverPassword, 20, "iot");
         }
-        // local Wi-Fi methods
+        
         void displayWifiNetworks() {
             // get device MAC Address
             Serial.print("MAC address: ");
@@ -64,52 +71,74 @@ class WifiConnector {
             Serial.println("");
         }
 
-        void connectWiFi(const char* ssid, const char* password) {
-            Serial.print("Connecting to network: ");
-            Serial.println(ssid);
-            WiFi.mode(WIFI_STA);
-            WiFi.begin(ssid, password);
+        void connectWifiServer() {
+            Serial.println();
+            Serial.println();
+            Serial.print("Connecting to ");
+            Serial.println(serverSsid);
+
             
-            // wait for device to connect to network
-            while (WiFi.status() != WL_CONNECTED) {
-                delay(100);
-                Serial.print(".");
-            }
+            WiFi.softAP(serverSsid, serverPassword);
+            WiFi.enableAP(true);
+            IPAddress myIP = WiFi.softAPIP();
+            Serial.print("AP IP address: ");
+            Serial.println(myIP);
 
-            // when connected, display IP address
-            Serial.println("Connected!");
-            Serial.print("IP address: ");
-            Serial.println(WiFi.localIP());
-            this->connectedToWifi = true;
             setupWebServer();
-            delay(1000);
         }
 
-        WiFiClient getWifiClient() {
-            return this->client;
-        }
+        // void connectWiFi(const char* ssid, const char* password) {
+        //     Serial.print("Connecting to network: ");
+        //     Serial.println(ssid);
+        //     WiFi.mode(WIFI_STA);
+        //     WiFi.begin(ssid, password);
+            
+        //     // wait for device to connect to network
+        //     while (WiFi.status() != WL_CONNECTED) {
+        //         delay(100);
+        //         Serial.print(".");
+        //     }
+
+        //     // when connected, display IP address
+        //     Serial.println("Connected!");
+        //     Serial.print("IP address: ");
+        //     Serial.println(WiFi.localIP());
+        //     this->connectedToWifi = true;
+        //     setupWebServer();
+        //     delay(1000);
+        // }
+
+        // WiFiClient getWifiClient() {
+        //     return this->client;
+        // }
 
         // WebServer methods
         void setupWebServer() {
-            if (MDNS.begin("esp32")) {
-                Serial.println("MDNS responder started\n");
+            if (MDNS.begin("esp")) {
+                Serial.println("MDNS responder started");
             }
 
-            webServer.on("/", handleRoot);
+            webServer.on("/", [this]() { this->handleRoot(); } );
 
             webServer.on("/inline", [&]() {
-                webServer.send(200, "text/plain", "this workds well");
+                String r="";
+                for(int i=0; i< webServer.args();i++){
+                    r += webServer.argName(i) + "=" + webServer.arg(i);
+                    r += '\n';
+                }
+                
+                webServer.send(200, "text/plain", "this workds well\n"+r);
             });
 
-            webServer.onNotFound(handleNotFound);
+            
+
+            webServer.onNotFound([this]() { this->handleNotFound(); });
             webServer.begin();
             Serial.println("HTPP server started");
             delay(1000);
-            webServer.handleClient();
-            delay(2);
         }
 
-        static void handleRoot() {
+        void handleRoot() {
             webServer.send(200, "text/plain", "hello from esp32");
         }
 
@@ -119,6 +148,10 @@ class WifiConnector {
             message += webServer.uri();
             message += "\nMethod: ";
             message += (webServer.method() == HTTP_GET) ? "GET" : "POST";
+        }
+
+        void handleWebServerClient() {
+            webServer.handleClient();
         }
 };
 

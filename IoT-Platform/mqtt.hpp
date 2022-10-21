@@ -34,7 +34,7 @@ class Mqtt {
         }
 
         void connectMQTT(const char* ssid, const char* password, char* topic, char* mqttHost, int socket, char* mqttPass) {
-            wifiConnector.connectWiFi(ssid, password);
+            //wifiConnector.connectWiFi(ssid, password);
             // after WiFi is connected, connect MQTT
             Serial.print("Server configured: ");
             Serial.print(mqttHost);
