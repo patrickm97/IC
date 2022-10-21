@@ -5,7 +5,7 @@
 #include <string>
 #include <WiFi.h>
 #include <WiFiClient.h>
-
+#include <regex>
 #include <WebServer.h>
 #include <ESPmDNS.h>
 
@@ -13,20 +13,22 @@ using namespace std;
 
 class WifiConnector {
     private:
-        //WiFiClient client;
+        //WiFiClient wifiClient;
         WebServer webServer;
         char serverSsid[100];
         char serverPassword[20];
         WiFiServer wifiServer;
-
+        regex ipRegex;
+        //regex a; 
     public:
         // constructor
         // : webServer(80)
         WifiConnector() : wifiServer() {
             
-            int rcode = rand()%10000;
+            int rcode = rand() % 10000;
             snprintf(this->serverSsid, 100, "%s%05d", "IoTAgro",rcode);
             snprintf(this->serverPassword, 20, "iot");
+            this-> ipRegex = "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\:\\d{1,4}";
         }
         
         void displayWifiNetworks() {
@@ -87,7 +89,7 @@ class WifiConnector {
             setupWebServer();
         }
 
-        // void connectWiFi(const char* ssid, const char* password) {
+        // void connectWiFiClient(const char* ssid, const char* password) {
         //     Serial.print("Connecting to network: ");
         //     Serial.println(ssid);
         //     WiFi.mode(WIFI_STA);
@@ -121,13 +123,13 @@ class WifiConnector {
             webServer.on("/", [this]() { this->handleRoot(); } );
 
             webServer.on("/inline", [&]() {
-                String r="";
-                for(int i=0; i< webServer.args();i++){
+                String r = "";
+                for (int i = 0; i < webServer.args(); i++) {
                     r += webServer.argName(i) + "=" + webServer.arg(i);
                     r += '\n';
                 }
                 
-                webServer.send(200, "text/plain", "this workds well\n"+r);
+                webServer.send(200, "text/plain", "this workds well\n" + r);
             });
 
             
@@ -153,6 +155,8 @@ class WifiConnector {
         void handleWebServerClient() {
             webServer.handleClient();
         }
+
+
 };
 
 #endif

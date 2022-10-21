@@ -36,7 +36,7 @@ class Mqtt {
         void connectMQTT(const char* ssid, const char* password, char* topic, char* mqttHost, int socket, char* mqttPass) {
             //wifiConnector.connectWiFi(ssid, password);
             // after WiFi is connected, connect MQTT
-            Serial.print("Server configured: ");
+            Serial.print("MQTT server configured: ");
             Serial.print(mqttHost);
             Serial.print(" : ");
             Serial.println(socket);
@@ -50,7 +50,7 @@ class Mqtt {
         }
 
         void subscribe() {
-            MQTT.setCallback(mqtt_callback);
+            MQTT.setCallback(mqttCallback);
         }
 
         void publish() {
@@ -75,7 +75,7 @@ class Mqtt {
             }
         }
 
-        static void mqtt_callback(char* thing, byte* payload, unsigned int length) {
+        static void mqttCallback(char* thing, byte* payload, unsigned int length) {
             // variable to store the message received in subscribe
             String message;
             // save the message characters in message

@@ -38,7 +38,7 @@ class WebConnector {
         // }
 
         void connectWifiServer() {
-            wifiConnector.connectWifiServer();
+            this->wifiConnector.connectWifiServer();
         }
 };
 

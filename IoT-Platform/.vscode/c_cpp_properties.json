@@ -202,7 +202,9 @@
                 "__DEC32_MIN_EXP__=(-94)",
                 "__INT_FAST16_TYPE__=int",
                 "__LDBL_HAS_DENORM__=1",
-                "__cplusplus=199711L",
+               // "__cplusplus=199711L",
+                 
+                "__cplusplus=201103L",
                 "__DEC128_MAX__=9.999999999999999999999999999999999E6144DL",
                 "__INT_LEAST32_MAX__=0x7fffffffL",
                 "__DEC32_MIN__=1E-95DF",
