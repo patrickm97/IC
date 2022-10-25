@@ -19,7 +19,7 @@ class WifiConnector {
         char serverPassword[20];
         WiFiServer wifiServer;
         regex ipRegex;
-        //regex a; 
+        
     public:
         // constructor
         // : webServer(80)
@@ -28,9 +28,9 @@ class WifiConnector {
             int rcode = rand() % 10000;
             snprintf(this->serverSsid, 100, "%s%05d", "IoTAgro",rcode);
             snprintf(this->serverPassword, 20, "iot");
-            this-> ipRegex = "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\:\\d{1,4}";
+            this->ipRegex = "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\:\\d{1,4}";
         }
-        
+        /*
         void displayWifiNetworks() {
             // get device MAC Address
             Serial.print("MAC address: ");
@@ -53,9 +53,8 @@ class WifiConnector {
             Serial.println("Scan complete");
             delay(1000);
 
-            if (number_of_networks == 0) {
+            if (number_of_networks == 0)
                 Serial.println("No Wi-Fi network found");
-            } 
             else {
                 Serial.print(number_of_networks);
                 Serial.println(" networks found");
@@ -72,14 +71,13 @@ class WifiConnector {
             }
             Serial.println("");
         }
-
+        */
         void connectWifiServer() {
             Serial.println();
             Serial.println();
             Serial.print("Connecting to ");
             Serial.println(serverSsid);
 
-            
             WiFi.softAP(serverSsid, serverPassword);
             WiFi.enableAP(true);
             IPAddress myIP = WiFi.softAPIP();
@@ -129,10 +127,8 @@ class WifiConnector {
                     r += '\n';
                 }
                 
-                webServer.send(200, "text/plain", "this workds well\n" + r);
+                webServer.send(200, "text/plain", "<header>Hello</header><br><p>How are you</p>\n" + r);
             });
-
-            
 
             webServer.onNotFound([this]() { this->handleNotFound(); });
             webServer.begin();
@@ -155,8 +151,6 @@ class WifiConnector {
         void handleWebServerClient() {
             webServer.handleClient();
         }
-
-
 };
 
 #endif

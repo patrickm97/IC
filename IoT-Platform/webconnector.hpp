@@ -33,9 +33,9 @@ class WebConnector {
         //     wifiConnector.setupWebServer();
         // }
 
-        // void handleWebServerClient() {
-        //     wifiConnector.handleWebServerClient();
-        // }
+        void handleWebServerClient() {
+            wifiConnector.handleWebServerClient();
+        }
 
         void connectWifiServer() {
             this->wifiConnector.connectWifiServer();

@@ -45,7 +45,7 @@ void setup()
     delay(1000);
     preLoop();
 }
-
+/*
 int v = 0;
 void testaGravaString()
 {
@@ -76,33 +76,30 @@ void loop2()
     }
 }
 
-void loop(){
+void loop2(){
     wifiConnector.handleWebServerClient();
     delay(2);
 }
-
-void loop3()
+*/
+void loop()
 {
     if (!preLoopExecuted)
     {
-        delay(2000);
+        delay(5000);
         //EEPROM.write(0, 0);flash has 512 positions (0 to 511)
-        delay(1000);
-        //preLoop();
-        delay(1000);
         Serial.println("\n-------------------------Info in flash memory-------------------------");
         Serial.println(webConnector.loadData(mqttPassExists));
         Serial.println("");
         delay(1000);
     }
-    
-    // if (!wifiConnected)
-    // {
-    //     configMqtt.connectMqtt(storage.loadSsid(), storage.loadPassword(), storage.loadTopic(), storage.loadMqttHost(), storage.loadSocket(), storage.loadMqttPass());
-    //     wifiConnected = true;
-    // }
-    
     /*
+    if (!wifiConnected)
+    {
+        configMqtt.connectMqtt(storage.loadSsid(), storage.loadPassword(), storage.loadTopic(), storage.loadMqttHost(), storage.loadSocket(), storage.loadMqttPass());
+        wifiConnected = true;
+    }
+    
+    
     for (int i = 0; i < 512; i++)
     {
         Serial.print(EEPROM.readString(i));
@@ -112,8 +109,8 @@ void loop3()
             Serial.println("");
         }  
     }
-    
+    */
     webConnector.handleWebServerClient();
     delay(2);
-    */
+    
 }
