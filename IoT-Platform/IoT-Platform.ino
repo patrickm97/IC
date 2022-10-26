@@ -112,5 +112,4 @@ void loop()
     */
     webConnector.handleWebServerClient();
     delay(2);
-    
 }

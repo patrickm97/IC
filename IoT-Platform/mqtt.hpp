@@ -30,7 +30,7 @@ class Mqtt {
         }
 
         void displayWifiNetworks() {
-            wifiConnector.displayWifiNetworks();
+            //wifiConnector.displayWifiNetworks();
         }
 
         void connectMQTT(const char* ssid, const char* password, char* topic, char* mqttHost, int socket, char* mqttPass) {

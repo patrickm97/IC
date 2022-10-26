@@ -120,14 +120,14 @@ class WifiConnector {
 
             webServer.on("/", [this]() { this->handleRoot(); } );
 
-            webServer.on("/inline", [&]() {
+            webServer.on("/form", [&]() {
                 String r = "";
                 for (int i = 0; i < webServer.args(); i++) {
                     r += webServer.argName(i) + "=" + webServer.arg(i);
                     r += '\n';
                 }
                 
-                webServer.send(200, "text/plain", "<header>Hello</header><br><p>How are you</p>\n" + r);
+                webServer.send(200, "text/html", "<p>Data registered</p><br>" + r);
             });
 
             webServer.onNotFound([this]() { this->handleNotFound(); });
@@ -137,7 +137,20 @@ class WifiConnector {
         }
 
         void handleRoot() {
-            webServer.send(200, "text/plain", "hello from esp32");
+            String s;
+            s = "<html><header>Hello</header><br><p>How are you</p>";
+            s += "<form action='/form'>";
+            s += "<input placeholder='device ID' type='text' required='true' name='deviceId'>";
+            s += "<input placeholder='ssid' type='text' required='true' name='ssid'>";
+            s += "<input  placeholder='senha' type='password' required='true' name='password'>";
+            s += "<input  placeholder='mqtt host' type='text' required='true' name='mqttHost'>";
+            s += "<input  placeholder='mqtt password' type='password' required='false' name='mqttPass'>";
+            s += "<input  placeholder='mqtt topic' type='text' required='true' name='topic'><br>";
+            s += "<input  type='submit' value='send'/>";
+            s += "</form>";
+            s += "</html>";
+            webServer.send(200, "text/html",s); 
+            
         }
 
         void handleNotFound() {
