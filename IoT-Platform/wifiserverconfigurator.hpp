@@ -24,8 +24,8 @@ class WifiServerConfigurator {
             this->storage.saveData(deviceId, ssid, password, mqttHost, mqttPass, topic);
         }
 
-        String loadData(bool mqttPassExists) {
-            return this->storage.loadData(mqttPassExists);
+        String loadData() {
+            return this->storage.loadData();
         }
 };
 

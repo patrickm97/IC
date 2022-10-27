@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <iterator>
 #include <EEPROM.h>
+#include "configParams.hpp"
 using namespace std;
 
 #define MAIN_POSITION_CONFIGURED 0
@@ -52,22 +53,27 @@ public:
         EEPROM.commit();
     }
 
-    String loadData(bool mqttPassExists) {
+    void saveConfig(ConfigParams config){
+        saveInfo(config.deviceId, START_POSITION_DEVICEID, LENGTH_LIMIT_DEVICEID);
+        saveInfo(config.ssid, START_POSITION_SSID, LENGTH_LIMIT_SSID);
+        saveInfo(config.password, START_POSITION_PASSWORD, LENGTH_LIMIT_PASSWORD);
+        saveInfo(config.mqttHost, START_POSITION_MQTTHOST, LENGTH_LIMIT_MQTTHOST);
+        if (config.mqttPass.length() > 0)
+            saveInfo(config.mqttPass, START_POSITION_MQTTPASS, LENGTH_LIMIT_MQTTPASS);
+        saveInfo(config.topic, START_POSITION_TOPIC, LENGTH_LIMIT_TOPIC);
+        EEPROM.write(0, 1);
+        delay(50);
+        EEPROM.commit();
+    }
+
+    String loadData() {
         String dataReturn = "";
-        if (mqttPassExists)
-            dataReturn =+ "Device ID: " + loadInfo(START_POSITION_DEVICEID, LENGTH_LIMIT_DEVICEID) 
-                          + ", SSID: " + loadInfo(START_POSITION_SSID, LENGTH_LIMIT_SSID) 
-                          + ", Password: " + loadInfo(START_POSITION_PASSWORD, LENGTH_LIMIT_PASSWORD)  
-                          + ", MQTT Host: " + loadInfo(START_POSITION_MQTTHOST, LENGTH_LIMIT_MQTTHOST)  
-                          + ", MQTT Password: " + loadInfo(START_POSITION_MQTTPASS, LENGTH_LIMIT_MQTTPASS)  
-                          + ", Topic: " + loadInfo(START_POSITION_TOPIC, LENGTH_LIMIT_TOPIC) ;
-        else
-            dataReturn =+ "Device ID: " + loadInfo(START_POSITION_DEVICEID, LENGTH_LIMIT_DEVICEID) 
-                          + ", SSID: " + loadInfo(START_POSITION_SSID, LENGTH_LIMIT_SSID) 
-                          + ", Password: " + loadInfo(START_POSITION_PASSWORD, LENGTH_LIMIT_PASSWORD) 
-                          + ", MQTT Host: " + loadInfo(START_POSITION_MQTTHOST, LENGTH_LIMIT_MQTTHOST) 
-                          + ", MQTT Password: [empty] , Topic: " 
-                          + loadInfo(START_POSITION_TOPIC, LENGTH_LIMIT_TOPIC);
+        dataReturn =+ "Device ID: " + loadInfo(START_POSITION_DEVICEID, LENGTH_LIMIT_DEVICEID) 
+                        + ", SSID: " + loadInfo(START_POSITION_SSID, LENGTH_LIMIT_SSID) 
+                        + ", Password: " + loadInfo(START_POSITION_PASSWORD, LENGTH_LIMIT_PASSWORD)  
+                        + ", MQTT Host: " + loadInfo(START_POSITION_MQTTHOST, LENGTH_LIMIT_MQTTHOST)  
+                        + ", MQTT Password: " + loadInfo(START_POSITION_MQTTPASS, LENGTH_LIMIT_MQTTPASS)  
+                        + ", Topic: " + loadInfo(START_POSITION_TOPIC, LENGTH_LIMIT_TOPIC);
         return dataReturn;
     }
 

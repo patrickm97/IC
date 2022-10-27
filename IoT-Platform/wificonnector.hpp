@@ -8,6 +8,8 @@
 #include <regex>
 #include <WebServer.h>
 #include <ESPmDNS.h>
+#include "parametrosConfig.hpp"
+#include "wifiserverconfigurator.hpp"
 
 using namespace std;
 
@@ -19,17 +21,24 @@ class WifiConnector {
         char serverPassword[20];
         WiFiServer wifiServer;
         regex ipRegex;
+        LocalStorage& storage;
+        WifiServerConfigurator wifiServerConfigurator; // don't use & when class owns this object
         
     public:
         // constructor
         // : webServer(80)
-        WifiConnector() : wifiServer() {
+        WifiConnector(LocalStorage& storage) : wifiServer(), storage(storage), wifiServerConfigurator(storage) {
             
             int rcode = rand() % 10000;
             snprintf(this->serverSsid, 100, "%s%05d", "IoTAgro",rcode);
             snprintf(this->serverPassword, 20, "iot");
             this->ipRegex = "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\:\\d{1,4}";
         }
+
+        bool isDeviceConfigured() {
+            return this->wifiServerConfigurator.isDeviceConfigured();
+        }
+
         /*
         void displayWifiNetworks() {
             // get device MAC Address
@@ -111,7 +120,7 @@ class WifiConnector {
         // WiFiClient getWifiClient() {
         //     return this->client;
         // }
-
+        
         // WebServer methods
         void setupWebServer() {
             if (MDNS.begin("esp")) {
@@ -121,13 +130,20 @@ class WifiConnector {
             webServer.on("/", [this]() { this->handleRoot(); } );
 
             webServer.on("/form", [&]() {
-                String r = "";
-                for (int i = 0; i < webServer.args(); i++) {
-                    r += webServer.argName(i) + "=" + webServer.arg(i);
-                    r += '\n';
-                }
+                ConfigParams config;
+                config.mqttHost = webServer.arg("mqttHost");
+                String deviceId = webServer.arg("deviceId");
+                String ssid = webServer.arg("ssid");
+                String password = webServer.arg("password");
+                String mqttHost = webServer.arg("mqttHost");
+                String mqttPass = webServer.arg("mqttPass");
+                String topic = webServer.arg("topic");
+
+                webServer.send(200, "text/html", "<p>Data registered</p><br>");
                 
-                webServer.send(200, "text/html", "<p>Data registered</p><br>" + r);
+                storage.saveConfig(config);
+                // RESETAR O ESP
+                ESP.restart();
             });
 
             webServer.onNotFound([this]() { this->handleNotFound(); });
@@ -142,11 +158,11 @@ class WifiConnector {
             s += "<form action='/form'>";
             s += "<input placeholder='device ID' type='text' required='true' name='deviceId'>";
             s += "<input placeholder='ssid' type='text' required='true' name='ssid'>";
-            s += "<input  placeholder='senha' type='password' required='true' name='password'>";
-            s += "<input  placeholder='mqtt host' type='text' required='true' name='mqttHost'>";
-            s += "<input  placeholder='mqtt password' type='password' required='false' name='mqttPass'>";
-            s += "<input  placeholder='mqtt topic' type='text' required='true' name='topic'><br>";
-            s += "<input  type='submit' value='send'/>";
+            s += "<input placeholder='senha' type='password' required='true' name='password'>";
+            s += "<input placeholder='mqtt host' type='text' required='true' name='mqttHost'>";
+            s += "<input placeholder='mqtt password' type='password' required='false' name='mqttPass'>";
+            s += "<input placeholder='mqtt topic' type='text' required='true' name='topic'><br>";
+            s += "<input type='submit' value='send'/>";
             s += "</form>";
             s += "</html>";
             webServer.send(200, "text/html",s); 

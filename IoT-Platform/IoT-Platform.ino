@@ -2,7 +2,6 @@
 #include <iostream>
 #include <WiFi.h>
 #include "localstorage.hpp"
-#include "webconnector.hpp"
 #include "wificonnector.hpp"
 #include "configmqtt.hpp"
 
@@ -12,29 +11,27 @@ using namespace std;
 
 // declarations
 LocalStorage storage;
-WifiConnector wifiConnector;
-WebConnector webConnector(wifiConnector, storage);
+WifiConnector wifiConnector(storage);
 ConfigMqtt configMqtt(wifiConnector, storage);
-bool preLoopExecuted = false, mqttPassExists = false, wifiConnected = false;
+bool preLoopExecuted = false, wifiConnected = false;
 String deviceId = "esp32", ssid = "10.42.0.0:5901", password = "lab@iiot", 
        mqttHost = "190.186.5.1:8000", mqttPass = "pass", topic = "dev-iot";
 const uint16_t socket = 0;
 
 void preLoop() {
-    if (webConnector.isDeviceConfigured()) 
+    if (wifiConnector.isDeviceConfigured()) 
     {
         Serial.println("Device not configured, configuring...");
-        webConnector.connectWifiServer();
-        //webConnector.setupWebServer();
-        //webConnector.saveData(deviceId, ssid, password, mqttHost, mqttPass, topic);
+        wifiConnector.connectWifiServer();
+        //wifiConnector.setupWebServer();
+        //wifiConnector.saveData(deviceId, ssid, password, mqttHost, mqttPass, topic);
     }
     else
     {
         Serial.println("Device already registered, connecting to WiFi client...");
         delay(1000);
     }
-    if (!storage.loadMqttPass(true).isEmpty())
-        mqttPassExists = true;
+    
     preLoopExecuted = true;
 }
 
@@ -88,7 +85,7 @@ void loop()
         delay(5000);
         //EEPROM.write(0, 0);flash has 512 positions (0 to 511)
         Serial.println("\n-------------------------Info in flash memory-------------------------");
-        Serial.println(webConnector.loadData(mqttPassExists));
+        Serial.println(storage.loadData());
         Serial.println("");
         delay(1000);
     }
@@ -110,6 +107,6 @@ void loop()
         }  
     }
     */
-    webConnector.handleWebServerClient();
+    wifiConnector.handleWebServerClient();
     delay(2);
 }
