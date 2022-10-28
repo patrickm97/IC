@@ -39,6 +39,7 @@ public:
     *  mqttPass: address 88 + length + /0 (88 to 104)
     *  topic: address 105 + length + /0 (105 to 116)
     */
+   /*
     void saveData(String deviceId, String ssid, String password, String mqttHost, 
                   String mqttPass, String topic) {
         saveInfo(deviceId, START_POSITION_DEVICEID, LENGTH_LIMIT_DEVICEID);
@@ -51,7 +52,7 @@ public:
         EEPROM.write(0, 1);
         delay(50);
         EEPROM.commit();
-    }
+    }*/
 
     void saveConfig(ConfigParams config){
         saveInfo(config.deviceId, START_POSITION_DEVICEID, LENGTH_LIMIT_DEVICEID);
@@ -61,7 +62,7 @@ public:
         if (config.mqttPass.length() > 0)
             saveInfo(config.mqttPass, START_POSITION_MQTTPASS, LENGTH_LIMIT_MQTTPASS);
         saveInfo(config.topic, START_POSITION_TOPIC, LENGTH_LIMIT_TOPIC);
-        EEPROM.write(0, 1);
+        EEPROM.write(0, 1); // value 1 in position 0
         delay(50);
         EEPROM.commit();
     }

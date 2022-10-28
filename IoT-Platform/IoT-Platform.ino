@@ -7,32 +7,37 @@
 
 using namespace std;
 
+// flash has 512 positions (0 to 511)
 #define EEPROM_SIZE 512
 
 // declarations
 LocalStorage storage;
 WifiConnector wifiConnector(storage);
 ConfigMqtt configMqtt(wifiConnector, storage);
-bool preLoopExecuted = false, wifiConnected = false;
-String deviceId = "esp32", ssid = "10.42.0.0:5901", password = "lab@iiot", 
-       mqttHost = "190.186.5.1:8000", mqttPass = "pass", topic = "dev-iot";
+bool preLoopExecuted = false, wifiConnected = false, initialMessage = true;
+//String deviceId = "esp32", ssid = "10.42.0.0:5901", password = "lab@iiot", mqttHost = "190.186.5.1:8000", mqttPass = "pass", topic = "dev-iot";
 const uint16_t socket = 0;
 
 void preLoop() {
-    if (wifiConnector.isDeviceConfigured()) 
-    {
+    if (!wifiConnector.isDeviceConfigured()) {
         Serial.println("Device not configured, configuring...");
         wifiConnector.connectWifiServer();
         //wifiConnector.setupWebServer();
-        //wifiConnector.saveData(deviceId, ssid, password, mqttHost, mqttPass, topic);
     }
-    else
-    {
-        Serial.println("Device already registered, connecting to WiFi client...");
+    else {
+        //Serial.println("Device already registered, connecting to WiFi client...");
+        Serial.println("Device already registered, printing info...");
+        wifiConnected = true;
         delay(1000);
     }
-    
     preLoopExecuted = true;
+}
+
+void setZero() {
+    EEPROM.write(0, 0);
+    EEPROM.commit();
+    delay(1000);
+    Serial.println("0 set to 0");
 }
 
 void setup() 
@@ -78,21 +83,30 @@ void loop2(){
     delay(2);
 }
 */
+//int a = 0;
 void loop()
 {
-    if (!preLoopExecuted)
-    {
-        delay(5000);
-        //EEPROM.write(0, 0);flash has 512 positions (0 to 511)
+    /*
+    if (a == 0) {
+        setZero();
+        a++;
+    }*/
+    
+    if (!wifiConnector.isDeviceConfigured()) {
+        wifiConnector.handleWebServerClient();
+        delay(2);
+    }
+    else {
+        delay(1000);
         Serial.println("\n-------------------------Info in flash memory-------------------------");
         Serial.println(storage.loadData());
         Serial.println("");
-        delay(1000);
+        delay(100000);
     }
     /*
     if (!wifiConnected)
     {
-        configMqtt.connectMqtt(storage.loadSsid(), storage.loadPassword(), storage.loadTopic(), storage.loadMqttHost(), storage.loadSocket(), storage.loadMqttPass());
+        //configMqtt.connectMqtt(storage.loadSsid(), storage.loadPassword(), storage.loadTopic(), storage.loadMqttHost(), storage.loadSocket(), storage.loadMqttPass());
         wifiConnected = true;
     }
     
@@ -107,6 +121,4 @@ void loop()
         }  
     }
     */
-    wifiConnector.handleWebServerClient();
-    delay(2);
 }

@@ -8,7 +8,7 @@
 #include <regex>
 #include <WebServer.h>
 #include <ESPmDNS.h>
-#include "parametrosConfig.hpp"
+#include "configParams.hpp"
 #include "wifiserverconfigurator.hpp"
 
 using namespace std;
@@ -131,18 +131,20 @@ class WifiConnector {
 
             webServer.on("/form", [&]() {
                 ConfigParams config;
+                
+                config.deviceId = webServer.arg("deviceId");
+                config.ssid = webServer.arg("ssid");
+                config.password = webServer.arg("password");
                 config.mqttHost = webServer.arg("mqttHost");
-                String deviceId = webServer.arg("deviceId");
-                String ssid = webServer.arg("ssid");
-                String password = webServer.arg("password");
-                String mqttHost = webServer.arg("mqttHost");
-                String mqttPass = webServer.arg("mqttPass");
-                String topic = webServer.arg("topic");
+                config.mqttPass = webServer.arg("mqttPass");
+                config.topic = webServer.arg("topic");
 
                 webServer.send(200, "text/html", "<p>Data registered</p><br>");
                 
                 storage.saveConfig(config);
-                // RESETAR O ESP
+                Serial.println("Network configuration saved");
+                Serial.println("Restarting device...");
+                delay(2000);
                 ESP.restart();
             });
 

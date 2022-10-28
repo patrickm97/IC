@@ -18,11 +18,11 @@ class WifiServerConfigurator {
         bool isDeviceConfigured() {
             return this->storage.isDeviceConfigured();
         }
-
+        /*
         void saveData(String deviceId, String ssid, String password, String mqttHost, 
                       String mqttPass, String topic) {
             this->storage.saveData(deviceId, ssid, password, mqttHost, mqttPass, topic);
-        }
+        }*/
 
         String loadData() {
             return this->storage.loadData();
