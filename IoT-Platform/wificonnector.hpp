@@ -15,7 +15,7 @@ using namespace std;
 
 class WifiConnector {
     private:
-        //WiFiClient wifiClient;
+        WiFiClient wifiClient;
         WebServer webServer;
         char serverSsid[100];
         char serverPassword[20];
@@ -28,7 +28,6 @@ class WifiConnector {
         // constructor
         // : webServer(80)
         WifiConnector(LocalStorage& storage) : wifiServer(), storage(storage), wifiServerConfigurator(storage) {
-            
             int rcode = rand() % 10000;
             snprintf(this->serverSsid, 100, "%s%05d", "IoTAgro",rcode);
             snprintf(this->serverPassword, 20, "iot");
@@ -96,26 +95,21 @@ class WifiConnector {
             setupWebServer();
         }
 
-        // void connectWiFiClient(const char* ssid, const char* password) {
-        //     Serial.print("Connecting to network: ");
-        //     Serial.println(ssid);
-        //     WiFi.mode(WIFI_STA);
-        //     WiFi.begin(ssid, password);
-            
-        //     // wait for device to connect to network
-        //     while (WiFi.status() != WL_CONNECTED) {
-        //         delay(100);
-        //         Serial.print(".");
-        //     }
-
-        //     // when connected, display IP address
-        //     Serial.println("Connected!");
-        //     Serial.print("IP address: ");
-        //     Serial.println(WiFi.localIP());
-        //     this->connectedToWifi = true;
-        //     setupWebServer();
-        //     delay(1000);
-        // }
+        void connectWiFiClient(const char* ssid, const char* password) {
+            Serial.print("Connecting to network: ");
+            Serial.println(ssid);
+            WiFi.mode(WIFI_STA);
+            WiFi.begin(ssid, password);
+        // wait for device to connect to network
+            while (WiFi.status() != WL_CONNECTED) {
+                delay(100);
+                Serial.print(".");
+            }
+        // when connected, display IP address
+            Serial.println("Connected!");
+            Serial.print("IP address: ");
+            Serial.println(WiFi.localIP());
+        }
 
         // WiFiClient getWifiClient() {
         //     return this->client;
@@ -158,11 +152,11 @@ class WifiConnector {
             String s;
             s = "<html><header>Hello</header><br><p>How are you</p>";
             s += "<form action='/form'>";
-            s += "<input placeholder='device ID' type='text' required='true' name='deviceId'>";
-            s += "<input placeholder='ssid' type='text' required='true' name='ssid'>";
-            s += "<input placeholder='senha' type='password' required='true' name='password'>";
-            s += "<input placeholder='mqtt host' type='text' required='true' name='mqttHost'>";
-            s += "<input placeholder='mqtt password' type='password' required='false' name='mqttPass'>";
+            s += "<input placeholder='device ID' type='text' required='true' name='deviceId'><br>";
+            s += "<input placeholder='ssid' type='text' required='true' name='ssid'><br>";
+            s += "<input placeholder='senha' type='password' required='true' name='password'><br>";
+            s += "<input placeholder='mqtt host' type='text' required='true' name='mqttHost'><br>";
+            s += "<input placeholder='mqtt password' type='password' required='false' name='mqttPass'><br>";
             s += "<input placeholder='mqtt topic' type='text' required='true' name='topic'><br>";
             s += "<input type='submit' value='send'/>";
             s += "</form>";

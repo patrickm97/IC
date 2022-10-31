@@ -47,43 +47,9 @@ void setup()
     delay(1000);
     preLoop();
 }
-/*
-int v = 0;
-void testaGravaString()
-{
-    v++;
-    String s = "blablabla";
-    s.concat(v);
-    EEPROM.writeString(1, s.c_str());
-    Serial.printf("%s %s\n", "Gravado: ", s);
-    EEPROM.commit();
-}
 
-void testaLeiaString()
-{
-    char teste[100];
-    EEPROM.readString(1, teste, 100);
-    Serial.printf("%s %s\n", "Memoria", teste);
-}
+bool displayMessage = true, mqttConnected = false, subscribeMqtt = true;
 
-void loop2()
-{
-    String s = Serial.readString();
-    Serial.printf("%s%s%s\n","->",s,"<-");
-    if (s.compareTo("w\n") == 0){
-        testaGravaString();
-    }
-    if (s.compareTo("r\n") == 0){
-        testaLeiaString();
-    }
-}
-
-void loop2(){
-    wifiConnector.handleWebServerClient();
-    delay(2);
-}
-*/
-//int a = 0;
 void loop()
 {
     /*
@@ -91,34 +57,27 @@ void loop()
         setZero();
         a++;
     }*/
-    
     if (!wifiConnector.isDeviceConfigured()) {
         wifiConnector.handleWebServerClient();
         delay(2);
     }
     else {
-        delay(1000);
-        Serial.println("\n-------------------------Info in flash memory-------------------------");
-        Serial.println(storage.loadData());
-        Serial.println("");
-        delay(100000);
-    }
-    /*
-    if (!wifiConnected)
-    {
-        //configMqtt.connectMqtt(storage.loadSsid(), storage.loadPassword(), storage.loadTopic(), storage.loadMqttHost(), storage.loadSocket(), storage.loadMqttPass());
-        wifiConnected = true;
-    }
-    
-    
-    for (int i = 0; i < 512; i++)
-    {
-        Serial.print(EEPROM.readString(i));
-        Serial.print(" ");
-        if (i > 0 && i % 30 == 0)
-        {
+        if (displayMessage) {
+            Serial.println("\n-------------------------Info in flash memory-------------------------");
+            Serial.println(storage.loadData());
             Serial.println("");
-        }  
+            displayMessage = false;
+        }
+        if (!mqttConnected) {
+            const char* ssid = storage.loadSsid();
+            configMqtt.connectMqtt(ssid, storage.loadPassword(), storage.loadTopic(), 
+            storage.loadMqttHost(), storage.loadSocket(), storage.loadMqttPass());
+            mqttConnected = false;
+        }
+        if (mqttConnected && subscribeMqtt) {
+            configMqtt.subscribe();
+            subscribeMqtt = false;
+        }
     }
-    */
+    
 }

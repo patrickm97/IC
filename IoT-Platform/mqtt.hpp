@@ -34,7 +34,7 @@ class Mqtt {
         }
 
         void connectMQTT(const char* ssid, const char* password, char* topic, char* mqttHost, int socket, char* mqttPass) {
-            //wifiConnector.connectWiFi(ssid, password);
+            wifiConnector.connectWiFiClient(ssid, password);
             // after WiFi is connected, connect MQTT
             Serial.print("MQTT server configured: ");
             Serial.print(mqttHost);
@@ -42,7 +42,7 @@ class Mqtt {
             Serial.println(socket);
             MQTT.setServer(mqttHost, socket);
             Serial.println("MQTT server set");
-            delay(500);
+            MQTT.setCallback(mqttCallback);
             this->deviceId = deviceId;
             this->mqttPassword = mqttPass;
             this->topic = topic;
@@ -50,7 +50,23 @@ class Mqtt {
         }
 
         void subscribe() {
-            MQTT.setCallback(mqttCallback);
+            loopMQTT();
+            if (!MQTT.connected()) {
+                if (reconnect < millis()) {
+                    Serial.println("");
+                    Serial.println("Connecting to server...");
+                    if (!MQTT.connect(deviceId, tokenApi, mqttPassword)) {
+                        Serial.println("Failed to connect to MQTT server");
+                        Serial.println("Disconnecting from server...");
+                        MQTT.disconnect();
+                        Serial.println("Disconnected");
+                    }
+                    else {
+                        Serial.println("Subscription done!");
+                    }
+                }
+                reconnect = millis() + 5000;
+            }
         }
 
         void publish() {
@@ -83,13 +99,11 @@ class Mqtt {
                 char c = (char)payload[i];
                 message += c;
             }
-            
             // TODO - handle message received
             Serial.print("Message received in subscribe: ");
             Serial.println(message);
         }
 
-        
 };
 
 #endif
