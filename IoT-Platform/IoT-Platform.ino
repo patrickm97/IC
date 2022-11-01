@@ -15,7 +15,7 @@ LocalStorage storage;
 WifiConnector wifiConnector(storage);
 ConfigMqtt configMqtt(wifiConnector, storage);
 bool preLoopExecuted = false, wifiConnected = false, initialMessage = true;
-//String deviceId = "esp32", ssid = "10.42.0.0:5901", password = "lab@iiot", mqttHost = "190.186.5.1:8000", mqttPass = "pass", topic = "dev-iot";
+//String deviceId = "esp32", ssid = "iotserver", password = "lab@iiot", mqttHost = "10.42.0.1:5901", mqttPass = "pass", topic = "dev";
 const uint16_t socket = 0;
 
 void preLoop() {
@@ -49,6 +49,7 @@ void setup()
 }
 
 bool displayMessage = true, mqttConnected = false, subscribeMqtt = true;
+//int a = 0;
 
 void loop()
 {
@@ -57,6 +58,7 @@ void loop()
         setZero();
         a++;
     }*/
+    
     if (!wifiConnector.isDeviceConfigured()) {
         wifiConnector.handleWebServerClient();
         delay(2);
@@ -67,11 +69,21 @@ void loop()
             Serial.println(storage.loadData());
             Serial.println("");
             displayMessage = false;
+            delay(1000);
         }
         if (!mqttConnected) {
             const char* ssid = storage.loadSsid();
-            configMqtt.connectMqtt(ssid, storage.loadPassword(), storage.loadTopic(), 
-            storage.loadMqttHost(), storage.loadSocket(), storage.loadMqttPass());
+            const char* password = storage.loadPassword();
+            const char* topic = storage.loadTopic();
+            const char* mqttHost = storage.loadMqttHost();
+            int socket = storage.loadSocket();
+            const char* mqttPass = storage.loadMqttPass();
+            delay(1000);
+            Serial.print("ssid in main: ");
+            Serial.print(ssid);
+            Serial.print(", password in main: ");
+            Serial.println(password);
+            configMqtt.connectMqtt(ssid, password, topic, mqttHost, socket, mqttPass);
             mqttConnected = false;
         }
         if (mqttConnected && subscribeMqtt) {
@@ -79,5 +91,4 @@ void loop()
             subscribeMqtt = false;
         }
     }
-    
 }

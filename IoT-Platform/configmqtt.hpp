@@ -20,7 +20,11 @@ class ConfigMqtt {
             mqtt.displayWifiNetworks();
         }
     
-        void connectMqtt(const char* ssid, const char* password, char* topic, char* mqttHost , int socket, char* mqttPass) {
+        void connectMqtt(const char* ssid, const char* password, const char* topic, const char* mqttHost , int socket, const char* mqttPass) {
+            Serial.print("ssid in configmqtt: ");
+            Serial.print(ssid);
+            Serial.print(", password in configmqtt: ");
+            Serial.println(password);
             mqtt.connectMQTT(ssid, password, topic, mqttHost, socket, mqttPass);
         }
 

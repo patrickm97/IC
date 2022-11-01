@@ -97,7 +97,9 @@ class WifiConnector {
 
         void connectWiFiClient(const char* ssid, const char* password) {
             Serial.print("Connecting to network: ");
-            Serial.println(ssid);
+            Serial.print(ssid);
+            Serial.print(", password: ");
+            Serial.println(password);
             WiFi.mode(WIFI_STA);
             WiFi.begin(ssid, password);
         // wait for device to connect to network

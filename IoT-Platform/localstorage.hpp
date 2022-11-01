@@ -90,17 +90,20 @@ public:
         return outString;
     }
 
-    char* loadTopic() {
+    const char* loadTopic() {
         char outCharArray[LENGTH_LIMIT_TOPIC];
         EEPROM.readString(START_POSITION_TOPIC, outCharArray, LENGTH_LIMIT_TOPIC);
-        return outCharArray;
+        const char* outConstChar = outCharArray;
+        return outConstChar;
     }
 
     const char* loadSsid() {
         char outCharArray[LENGTH_LIMIT_SSID];
         EEPROM.readString(START_POSITION_SSID, outCharArray, LENGTH_LIMIT_SSID);
         const char* outConstChar = outCharArray;
-        return outConstChar;
+        Serial.print("ssid in storage: ");
+        Serial.println(outConstChar);
+        return outCharArray;
     }
 
     const char* loadPassword() {
@@ -110,14 +113,15 @@ public:
         return outConstChar;
     }
 
-    char* loadMqttHost() {
+    const char* loadMqttHost() {
         char outCharArray[LENGTH_LIMIT_MQTTHOST];
         EEPROM.readString(START_POSITION_MQTTHOST, outCharArray, LENGTH_LIMIT_MQTTHOST);
-        return outCharArray;
+        const char* outConstChar = outCharArray;
+        return outConstChar;
     }
     
     int loadSocket() {
-        char* mqttHost = loadMqttHost();
+        const char* mqttHost = loadMqttHost();
         String strMqttHost = mqttHost;
         int mqttHostLen = strMqttHost.length();
         int socketIdx = mqttHostLen - 5;
@@ -128,17 +132,12 @@ public:
         return socket;
     }
 
-    char* loadMqttPass()
+    const char* loadMqttPass()
     {
         char outCharArray[LENGTH_LIMIT_MQTTPASS];
         EEPROM.readString(START_POSITION_MQTTPASS, outCharArray, LENGTH_LIMIT_MQTTPASS);
-        return outCharArray;
-    }
-
-    String loadMqttPass(bool str)
-    {
-        String outString = loadMqttPass();
-        return outString;
+        const char* outConstChar = outCharArray;
+        return outConstChar;
     }
     
     bool isDeviceConfigured() {

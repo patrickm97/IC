@@ -33,8 +33,12 @@ class Mqtt {
             //wifiConnector.displayWifiNetworks();
         }
 
-        void connectMQTT(const char* ssid, const char* password, char* topic, char* mqttHost, int socket, char* mqttPass) {
+        void connectMQTT(const char* ssid, const char* password, const char* topic, const char* mqttHost, int socket, const char* mqttPass) {
             wifiConnector.connectWiFiClient(ssid, password);
+            Serial.print("ssid in mqtt: ");
+            Serial.print(ssid);
+            Serial.print(", password in configmqtt: ");
+            Serial.println(password);
             // after WiFi is connected, connect MQTT
             Serial.print("MQTT server configured: ");
             Serial.print(mqttHost);
