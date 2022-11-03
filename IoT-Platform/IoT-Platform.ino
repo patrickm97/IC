@@ -14,7 +14,7 @@ using namespace std;
 LocalStorage storage;
 WifiConnector wifiConnector(storage);
 ConfigMqtt configMqtt(wifiConnector, storage);
-bool preLoopExecuted = false, wifiConnected = false, initialMessage = true;
+bool preLoopExecuted = false;
 //String deviceId = "esp32", ssid = "iotserver", password = "lab@iiot", mqttHost = "10.42.0.1:5901", mqttPass = "pass", topic = "dev";
 const uint16_t socket = 0;
 
@@ -27,7 +27,7 @@ void preLoop() {
     else {
         //Serial.println("Device already registered, connecting to WiFi client...");
         Serial.println("Device already registered, printing info...");
-        wifiConnected = true;
+
         delay(1000);
     }
     preLoopExecuted = true;
@@ -72,19 +72,21 @@ void loop()
             delay(1000);
         }
         if (!mqttConnected) {
-            const char* ssid = storage.loadSsid();
-            const char* password = storage.loadPassword();
-            const char* topic = storage.loadTopic();
-            const char* mqttHost = storage.loadMqttHost();
+            String ssid = storage.loadSsid();
+            Serial.println(ssid);
+            String password = storage.loadPassword();
+            Serial.println(ssid);
+            String topic = storage.loadTopic();
+            String mqttHost = storage.loadMqttHost();
             int socket = storage.loadSocket();
-            const char* mqttPass = storage.loadMqttPass();
+            String mqttPass = storage.loadMqttPass();
             delay(1000);
             Serial.print("ssid in main: ");
             Serial.print(ssid);
             Serial.print(", password in main: ");
             Serial.println(password);
-            configMqtt.connectMqtt(ssid, password, topic, mqttHost, socket, mqttPass);
-            mqttConnected = false;
+            configMqtt.connectMqtt(ssid.c_str(), password.c_str(), topic.c_str(), mqttHost.c_str(), socket, mqttPass.c_str());
+            mqttConnected = true;
         }
         if (mqttConnected && subscribeMqtt) {
             configMqtt.subscribe();

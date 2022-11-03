@@ -69,7 +69,7 @@ public:
 
     String loadData() {
         String dataReturn = "";
-        dataReturn =+ "Device ID: " + loadInfo(START_POSITION_DEVICEID, LENGTH_LIMIT_DEVICEID) 
+        dataReturn += "Device ID: " + loadInfo(START_POSITION_DEVICEID, LENGTH_LIMIT_DEVICEID) 
                         + ", SSID: " + loadInfo(START_POSITION_SSID, LENGTH_LIMIT_SSID) 
                         + ", Password: " + loadInfo(START_POSITION_PASSWORD, LENGTH_LIMIT_PASSWORD)  
                         + ", MQTT Host: " + loadInfo(START_POSITION_MQTTHOST, LENGTH_LIMIT_MQTTHOST)  
@@ -85,59 +85,38 @@ public:
         String outString = "";
         for (int i = 0; i < strlen(outCharArray); i++)
         {
-            outString = outString + outCharArray[i];
+            outString += outCharArray[i];
         }
         return outString;
     }
 
-    const char* loadTopic() {
-        char outCharArray[LENGTH_LIMIT_TOPIC];
-        EEPROM.readString(START_POSITION_TOPIC, outCharArray, LENGTH_LIMIT_TOPIC);
-        const char* outConstChar = outCharArray;
-        return outConstChar;
+    String loadTopic() {
+        return loadInfo(START_POSITION_TOPIC, LENGTH_LIMIT_TOPIC);
     }
 
-    const char* loadSsid() {
-        char outCharArray[LENGTH_LIMIT_SSID];
-        EEPROM.readString(START_POSITION_SSID, outCharArray, LENGTH_LIMIT_SSID);
-        const char* outConstChar = outCharArray;
-        Serial.print("ssid in storage: ");
-        Serial.println(outConstChar);
-        return outCharArray;
+    String loadSsid() {
+        return loadInfo(START_POSITION_SSID, LENGTH_LIMIT_SSID);
     }
 
-    const char* loadPassword() {
-        char outCharArray[LENGTH_LIMIT_PASSWORD];
-        EEPROM.readString(START_POSITION_PASSWORD, outCharArray, LENGTH_LIMIT_PASSWORD);
-        const char* outConstChar = outCharArray;
-        return outConstChar;
+    String loadPassword() {
+        return loadInfo(START_POSITION_PASSWORD, LENGTH_LIMIT_PASSWORD);
     }
 
-    const char* loadMqttHost() {
-        char outCharArray[LENGTH_LIMIT_MQTTHOST];
-        EEPROM.readString(START_POSITION_MQTTHOST, outCharArray, LENGTH_LIMIT_MQTTHOST);
-        const char* outConstChar = outCharArray;
-        return outConstChar;
+    String loadMqttHost() {
+        return loadInfo(START_POSITION_MQTTHOST, LENGTH_LIMIT_MQTTHOST);
     }
     
     int loadSocket() {
-        const char* mqttHost = loadMqttHost();
-        String strMqttHost = mqttHost;
+        String strMqttHost = loadMqttHost();
         int mqttHostLen = strMqttHost.length();
         int socketIdx = mqttHostLen - 5;
         String subMqttHost = strMqttHost.substring(socketIdx);
-        char charSocket[4];
-        strcpy(charSocket, subMqttHost.c_str());
-        int socket = atoi(charSocket);
-        return socket;
+        return subMqttHost.toInt();
     }
 
-    const char* loadMqttPass()
+    String loadMqttPass()
     {
-        char outCharArray[LENGTH_LIMIT_MQTTPASS];
-        EEPROM.readString(START_POSITION_MQTTPASS, outCharArray, LENGTH_LIMIT_MQTTPASS);
-        const char* outConstChar = outCharArray;
-        return outConstChar;
+        return loadInfo(START_POSITION_MQTTPASS, LENGTH_LIMIT_MQTTPASS);
     }
     
     bool isDeviceConfigured() {
