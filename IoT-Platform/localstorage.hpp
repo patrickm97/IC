@@ -16,16 +16,18 @@ using namespace std;
 #define START_POSITION_DEVICEID 1
 #define START_POSITION_SSID 13
 #define START_POSITION_PASSWORD 35
-#define START_POSITION_MQTTHOST 51
-#define START_POSITION_MQTTPASS 72
+#define START_POSITION_MQTTIP 51
+#define START_POSITION_MQTTPASS 67
 #define START_POSITION_TOPIC 88
+#define START_POSITION_MQTTSOCKET 99
 
 #define LENGTH_LIMIT_DEVICEID 10
 #define LENGTH_LIMIT_SSID 20
 #define LENGTH_LIMIT_PASSWORD 15
-#define LENGTH_LIMIT_MQTTHOST 20
+#define LENGTH_LIMIT_MQTTIP 15
 #define LENGTH_LIMIT_MQTTPASS 15
 #define LENGTH_LIMIT_TOPIC 10
+#define LENGTH_LIMIT_MQTTSOCKET 4
 
 class LocalStorage
 {
@@ -35,17 +37,17 @@ public:
     *  deviceId: address 1 + length + /0 (1 to 12)
     *  ssid: address 13 + length + /0 (13 to 49)
     *  password: address 50 + length + /0 (50 to 65)
-    *  mqttHost: address 66 + length + /0 (66 to 87)
+    *  mqttIP: address 66 + length + /0 (66 to 87)
     *  mqttPass: address 88 + length + /0 (88 to 104)
     *  topic: address 105 + length + /0 (105 to 116)
     */
    /*
-    void saveData(String deviceId, String ssid, String password, String mqttHost, 
+    void saveData(String deviceId, String ssid, String password, String mqttIP, 
                   String mqttPass, String topic) {
         saveInfo(deviceId, START_POSITION_DEVICEID, LENGTH_LIMIT_DEVICEID);
         saveInfo(ssid, START_POSITION_SSID, LENGTH_LIMIT_SSID);
         saveInfo(password, START_POSITION_PASSWORD, LENGTH_LIMIT_PASSWORD);
-        saveInfo(mqttHost, START_POSITION_MQTTHOST, LENGTH_LIMIT_MQTTHOST);
+        saveInfo(mqttIP, START_POSITION_mqttIP, LENGTH_LIMIT_mqttIP);
         if (mqttPass.length() > 0)
             saveInfo(mqttPass, START_POSITION_MQTTPASS, LENGTH_LIMIT_MQTTPASS);
         saveInfo(topic, START_POSITION_TOPIC, LENGTH_LIMIT_TOPIC);
@@ -58,10 +60,11 @@ public:
         saveInfo(config.deviceId, START_POSITION_DEVICEID, LENGTH_LIMIT_DEVICEID);
         saveInfo(config.ssid, START_POSITION_SSID, LENGTH_LIMIT_SSID);
         saveInfo(config.password, START_POSITION_PASSWORD, LENGTH_LIMIT_PASSWORD);
-        saveInfo(config.mqttHost, START_POSITION_MQTTHOST, LENGTH_LIMIT_MQTTHOST);
+        saveInfo(config.mqttIP, START_POSITION_MQTTIP, LENGTH_LIMIT_MQTTIP);
         if (config.mqttPass.length() > 0)
             saveInfo(config.mqttPass, START_POSITION_MQTTPASS, LENGTH_LIMIT_MQTTPASS);
         saveInfo(config.topic, START_POSITION_TOPIC, LENGTH_LIMIT_TOPIC);
+        saveInfo(config.mqttSocket, START_POSITION_MQTTSOCKET, LENGTH_LIMIT_MQTTSOCKET);
         EEPROM.write(0, 1); // value 1 in position 0
         delay(50);
         EEPROM.commit();
@@ -72,7 +75,8 @@ public:
         dataReturn += "Device ID: " + loadInfo(START_POSITION_DEVICEID, LENGTH_LIMIT_DEVICEID) 
                         + ", SSID: " + loadInfo(START_POSITION_SSID, LENGTH_LIMIT_SSID) 
                         + ", Password: " + loadInfo(START_POSITION_PASSWORD, LENGTH_LIMIT_PASSWORD)  
-                        + ", MQTT Host: " + loadInfo(START_POSITION_MQTTHOST, LENGTH_LIMIT_MQTTHOST)  
+                        + ", MQTT Host: " + loadInfo(START_POSITION_MQTTIP, LENGTH_LIMIT_MQTTIP)
+                        + ", MQTT Socket: " + loadInfo(START_POSITION_MQTTSOCKET, LENGTH_LIMIT_MQTTSOCKET)
                         + ", MQTT Password: " + loadInfo(START_POSITION_MQTTPASS, LENGTH_LIMIT_MQTTPASS)  
                         + ", Topic: " + loadInfo(START_POSITION_TOPIC, LENGTH_LIMIT_TOPIC);
         return dataReturn;
@@ -102,16 +106,20 @@ public:
         return loadInfo(START_POSITION_PASSWORD, LENGTH_LIMIT_PASSWORD);
     }
 
-    String loadMqttHost() {
-        return loadInfo(START_POSITION_MQTTHOST, LENGTH_LIMIT_MQTTHOST);
+    String loadMqttIP() {
+        return loadInfo(START_POSITION_MQTTIP, LENGTH_LIMIT_MQTTIP);
+    }
+
+    int loadMqttSocket() {
+        return loadInfo(START_POSITION_MQTTSOCKET, LENGTH_LIMIT_MQTTSOCKET).toInt();
     }
     
     int loadSocket() {
-        String strMqttHost = loadMqttHost();
-        int mqttHostLen = strMqttHost.length();
-        int socketIdx = mqttHostLen - 5;
-        String subMqttHost = strMqttHost.substring(socketIdx);
-        return subMqttHost.toInt();
+        String strmqttIP = loadMqttIP();
+        int mqttIPLen = strmqttIP.length();
+        int socketIdx = mqttIPLen - 5;
+        String submqttIP = strmqttIP.substring(socketIdx);
+        return submqttIP.toInt();
     }
 
     String loadMqttPass()

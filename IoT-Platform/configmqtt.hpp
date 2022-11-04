@@ -21,10 +21,6 @@ class ConfigMqtt {
         }
     
         void connectMqtt(const char* ssid, const char* password, const char* topic, const char* mqttHost , int socket, const char* mqttPass) {
-            Serial.print("ssid in configmqtt: ");
-            Serial.print(ssid);
-            Serial.print(", password in configmqtt: ");
-            Serial.println(password);
             mqtt.connectMQTT(ssid, password, topic, mqttHost, socket, mqttPass);
         }
 
@@ -34,6 +30,10 @@ class ConfigMqtt {
 
         void publish() {
             mqtt.publish();
+        }
+
+        void loopMqtt() {
+            mqtt.loopMqtt();
         }
 };
 

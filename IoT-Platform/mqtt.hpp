@@ -19,11 +19,6 @@ class Mqtt {
         unsigned long waitTime;
         unsigned long reconnect;
 
-        void loopMQTT() {
-            // keep the connection active
-            MQTT.loop();
-        }
-
     public:
         Mqtt(WifiConnector &wifiConnector) : wifiConnector(wifiConnector) {
             this->tokenApi = "token";
@@ -33,12 +28,13 @@ class Mqtt {
             //wifiConnector.displayWifiNetworks();
         }
 
+        void loopMqtt() {
+            MQTT.loop();
+            
+        }
+
         void connectMQTT(const char* ssid, const char* password, const char* topic, const char* mqttHost, int socket, const char* mqttPass) {
             wifiConnector.connectWiFiClient(ssid, password);
-            Serial.print("ssid in mqtt: ");
-            Serial.print(ssid);
-            Serial.print(", password in configmqtt: ");
-            Serial.println(password);
             // after WiFi is connected, connect MQTT
             Serial.print("MQTT server configured: ");
             Serial.print(mqttHost);
@@ -50,11 +46,15 @@ class Mqtt {
             this->deviceId = deviceId;
             this->mqttPassword = mqttPass;
             this->topic = topic;
-            delay(500);
+            delay(1000);
+            Serial.println("antes do publish");
+            MQTT.publish("conexao", this->deviceId);
+            Serial.println("depois do publish");
         }
 
         void subscribe() {
-            loopMQTT();
+            // keep connection active
+            //MQTT.loop();
             if (!MQTT.connected()) {
                 if (reconnect < millis()) {
                     Serial.println("");
@@ -74,7 +74,8 @@ class Mqtt {
         }
 
         void publish() {
-            loopMQTT();
+            // keep connection active
+            //MQTT.loop();
             if (!MQTT.connected()) {
                 if(reconnect < millis()) {
                     Serial.println("");
@@ -96,6 +97,7 @@ class Mqtt {
         }
 
         static void mqttCallback(char* thing, byte* payload, unsigned int length) {
+            Serial.println("entered callback");
             // variable to store the message received in subscribe
             String message;
             // save the message characters in message

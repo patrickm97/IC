@@ -131,9 +131,10 @@ class WifiConnector {
                 config.deviceId = webServer.arg("deviceId");
                 config.ssid = webServer.arg("ssid");
                 config.password = webServer.arg("password");
-                config.mqttHost = webServer.arg("mqttHost");
+                config.mqttIP = webServer.arg("mqttIP");
                 config.mqttPass = webServer.arg("mqttPass");
                 config.topic = webServer.arg("topic");
+                config.mqttSocket = webServer.arg("mqttSocket");
 
                 webServer.send(200, "text/html", "<p>Data registered</p><br>");
                 
@@ -157,14 +158,14 @@ class WifiConnector {
             s += "<input placeholder='device ID' type='text' required='true' name='deviceId'><br>";
             s += "<input placeholder='ssid' type='text' required='true' name='ssid'><br>";
             s += "<input placeholder='senha' type='password' required='true' name='password'><br>";
-            s += "<input placeholder='mqtt host' type='text' required='true' name='mqttHost'><br>";
-            s += "<input placeholder='mqtt password' type='password' required='false' name='mqttPass'><br>";
-            s += "<input placeholder='mqtt topic' type='text' required='true' name='topic'><br>";
+            s += "<input placeholder='MQTT IP' type='text' required='true' name='mqttIP'><br>";
+            s += "<input placeholder='MQTT socket' type='text' required='true' name='mqttSocket'><br>";
+            s += "<input placeholder='MQTT password' type='password' name='mqttPass'><br>";
+            s += "<input placeholder='MQTT topic' type='text' required='true' name='topic'><br>";
             s += "<input type='submit' value='send'/>";
             s += "</form>";
             s += "</html>";
             webServer.send(200, "text/html",s); 
-            
         }
 
         void handleNotFound() {

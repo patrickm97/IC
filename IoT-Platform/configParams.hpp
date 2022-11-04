@@ -6,9 +6,10 @@ class ConfigParams {
         String deviceId;
         String ssid;
         String password;
-        String mqttHost;
+        String mqttIP;
         String mqttPass;
         String topic;
+        String mqttSocket;
 };
 
 #endif
