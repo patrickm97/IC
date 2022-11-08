@@ -13,15 +13,14 @@ class Mqtt {
         WiFiClient client;
         PubSubClient MQTT;
         const char* deviceId;
-        const char* mqttPassword;
-        const char* tokenApi;
         const char* topic;
         unsigned long waitTime;
         unsigned long reconnect;
 
     public:
         Mqtt(WifiConnector &wifiConnector) : wifiConnector(wifiConnector) {
-            this->tokenApi = "token";
+            this->waitTime = 0;
+            this->reconnect = 0;
         }
 
         void displayWifiNetworks() {
@@ -30,25 +29,24 @@ class Mqtt {
 
         void loopMqtt() {
             MQTT.loop();
-            if(!MQTT.connected()){ //Se nao estiver conectado
+            if(!MQTT.connected()){
                 if(reconnect< millis()){ //Executa a solicitacao de conexao a cada 5 segundos
                 Serial.println("");
-                Serial.println("Conectando ao servidor...");
+                Serial.println("Connecting to server...");
                 //Solicita a conexao com o servidor utilizando os parametros "ID_DISPOSITIVO", "TOKEN_API" e "SENHA_ID" 
-                if(!MQTT.connect(deviceId, tokenApi, mqttPassword)){ 
-                    Serial.println("Falha na conexao com o servidor.");
+                if(!MQTT.connect(deviceId)){ 
+                    Serial.println("Failed to connect to MQTT server");
                 } else {
-                    Serial.println("Conectado!");
-                    Serial.print("Estabelecendo inscricao com ");
+                    Serial.println("MQTT connected!");
+                    Serial.print("Estabilishing subscription to topic: ");
                     Serial.println(topic);
-                    //Solicita a inscricao no "TOPICO"
                     if(!MQTT.subscribe(topic)){
-                    Serial.println("Erro ao se inscrever no topico");
-                    Serial.println("Desconectando do servidor...");
-                    MQTT.disconnect(); //Desconecta a placa do servidor
-                    Serial.println("Desconectado.");
+                        Serial.println("Failed to subscribe to topic");
+                        Serial.println("Disconnecting from MQTT server...");
+                        MQTT.disconnect();
+                        Serial.println("MQTT disconnected");
                     } else {
-                    Serial.println("Inscricao concluida!");
+                        Serial.println("MQTT subscription done!");
                     }
                 }
                 reconnect = millis() + 5000; //Atualiza a contagem de tempo
@@ -56,25 +54,21 @@ class Mqtt {
             }
         }
 
-        void connectMQTT(const char* ssid, const char* password, const char* topic, const char* mqttHost, int socket, const char* mqttPass) {
+        void connectMQTT(const char* ssid, const char* password, const char* topic, const char* mqttIP, int socket) {
             wifiConnector.connectWiFiClient(ssid, password);
             // after WiFi is connected, connect MQTT
             Serial.print("MQTT server configured: ");
-            Serial.print(mqttHost);
+            Serial.print(mqttIP);
             Serial.print(" : ");
             Serial.println(socket);
-            MQTT.setServer(mqttHost, socket);
+            MQTT.setServer(mqttIP, socket);
             Serial.println("MQTT server set");
             MQTT.setCallback(mqttCallback);
             this->deviceId = deviceId;
-            this->mqttPassword = mqttPass;
             this->topic = topic;
             delay(1000);
-            //Serial.println("antes do publish");
-            //MQTT.publish("conexao", this->deviceId);
-            //Serial.println("depois do publish");
         }
-
+        /*
         void subscribe() {
             // keep connection active
             //MQTT.loop();
@@ -118,7 +112,7 @@ class Mqtt {
                 }
             }
         }
-
+        */
         static void mqttCallback(char* thing, byte* payload, unsigned int length) {
             Serial.println("entered callback");
             // variable to store the message received in subscribe

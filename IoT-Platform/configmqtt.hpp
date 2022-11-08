@@ -20,16 +20,16 @@ class ConfigMqtt {
             mqtt.displayWifiNetworks();
         }
     
-        void connectMqtt(const char* ssid, const char* password, const char* topic, const char* mqttHost , int socket, const char* mqttPass) {
-            mqtt.connectMQTT(ssid, password, topic, mqttHost, socket, mqttPass);
+        void connectMqtt(const char* ssid, const char* password, const char* topic, const char* mqttHost , int socket) {
+            mqtt.connectMQTT(ssid, password, topic, mqttHost, socket);
         }
 
         void subscribe() {
-            mqtt.subscribe();
+            //mqtt.subscribe();
         }
 
         void publish() {
-            mqtt.publish();
+            //mqtt.publish();
         }
 
         void loopMqtt() {

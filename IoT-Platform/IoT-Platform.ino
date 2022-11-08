@@ -15,8 +15,8 @@ LocalStorage storage;
 WifiConnector wifiConnector(storage);
 ConfigMqtt configMqtt(wifiConnector, storage);
 bool preLoopExecuted = false;
-//String deviceId = "esp32", ssid = "iotserver", password = "lab@iiot", mqttIP = "10.42.0.1", mqttPass = "pass", topic = "dev";
-// int  mqttSocket = 5901;
+//String deviceId = "esp32", ssid = "iotserver", password = "lab@iiot", mqttIP = "10.42.0.1", topic = "dev";
+// int  mqttSocket = 1883;
 const uint16_t socket = 0;
 
 void preLoop() {
@@ -26,9 +26,7 @@ void preLoop() {
         //wifiConnector.setupWebServer();
     }
     else {
-        //Serial.println("Device already registered, connecting to WiFi client...");
         Serial.println("Device already registered, printing info...");
-
         delay(1000);
     }
     preLoopExecuted = true;
@@ -45,7 +43,7 @@ void setup()
 {
     EEPROM.begin(EEPROM_SIZE);
     Serial.begin(115200);
-    delay(1000);
+    delay(3000);
     preLoop();
 }
 
@@ -60,6 +58,7 @@ void loop()
         setZero();
         a++;
     }*/
+    
     if (!wifiConnector.isDeviceConfigured()) {
         wifiConnector.handleWebServerClient();
         delay(2);
@@ -78,9 +77,8 @@ void loop()
             String topic = storage.loadTopic();
             String mqttIP = storage.loadMqttIP();
             int socket = storage.loadMqttSocket();
-            String mqttPass = storage.loadMqttPass();
             delay(1000);
-            configMqtt.connectMqtt(ssid.c_str(), password.c_str(), topic.c_str(), mqttIP.c_str(), socket, mqttPass.c_str());
+            configMqtt.connectMqtt(ssid.c_str(), password.c_str(), topic.c_str(), mqttIP.c_str(), socket);
             mqttConnected = true;
         }
 

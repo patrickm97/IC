@@ -132,9 +132,8 @@ class WifiConnector {
                 config.ssid = webServer.arg("ssid");
                 config.password = webServer.arg("password");
                 config.mqttIP = webServer.arg("mqttIP");
-                config.mqttPass = webServer.arg("mqttPass");
-                config.topic = webServer.arg("topic");
                 config.mqttSocket = webServer.arg("mqttSocket");
+                config.topic = webServer.arg("topic");
 
                 webServer.send(200, "text/html", "<p>Data registered</p><br>");
                 
@@ -155,13 +154,12 @@ class WifiConnector {
             String s;
             s = "<html><header>Hello</header><br><p>How are you</p>";
             s += "<form action='/form'>";
-            s += "<input placeholder='device ID' type='text' required='true' name='deviceId'><br>";
-            s += "<input placeholder='ssid' type='text' required='true' name='ssid'><br>";
-            s += "<input placeholder='senha' type='password' required='true' name='password'><br>";
-            s += "<input placeholder='MQTT IP' type='text' required='true' name='mqttIP'><br>";
-            s += "<input placeholder='MQTT socket' type='text' required='true' name='mqttSocket'><br>";
-            s += "<input placeholder='MQTT password' type='password' name='mqttPass'><br>";
-            s += "<input placeholder='MQTT topic' type='text' required='true' name='topic'><br>";
+            s += "<input placeholder='device ID' type='text' required='true' name='deviceId'><br><br>";
+            s += "<input placeholder='ssid' type='text' required='true' name='ssid'><br><br>";
+            s += "<input placeholder='senha' type='password' required='true' name='password'><br><br>";
+            s += "<input placeholder='MQTT IP' type='text' required='true' name='mqttIP'><br><br>";
+            s += "<input placeholder='MQTT socket' type='text' required='true' name='mqttSocket'><br><br>";
+            s += "<input placeholder='MQTT topic' type='text' required='true' name='topic'><br><br>";
             s += "<input type='submit' value='send'/>";
             s += "</form>";
             s += "</html>";
