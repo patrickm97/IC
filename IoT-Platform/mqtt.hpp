@@ -12,35 +12,36 @@ class Mqtt {
         WifiConnector &wifiConnector;
         WiFiClient client;
         PubSubClient MQTT;
-        const char* deviceId;
-        const char* topic;
+        char deviceId[50];
+        char topic[50];
+        char mqttIP[50];
+        char ssid[50];
+        char ssidPassword[50];
         unsigned long waitTime;
         unsigned long reconnect;
-
+        
     public:
-        Mqtt(WifiConnector &wifiConnector) : wifiConnector(wifiConnector) {
-            this->waitTime = 0;
+        Mqtt(WifiConnector &wifiConnector) : wifiConnector(wifiConnector), client(), MQTT(client) {
+            this->waitTime = 10000;
             this->reconnect = 0;
         }
-
-        void displayWifiNetworks() {
-            //wifiConnector.displayWifiNetworks();
-        }
-
+        
         void loopMqtt() {
             MQTT.loop();
-            if(!MQTT.connected()){
-                if(reconnect< millis()){ //Executa a solicitacao de conexao a cada 5 segundos
-                Serial.println("");
-                Serial.println("Connecting to server...");
-                //Solicita a conexao com o servidor utilizando os parametros "ID_DISPOSITIVO", "TOKEN_API" e "SENHA_ID" 
-                if(!MQTT.connect(deviceId)){ 
+            if(!MQTT.connected()) {
+                if(reconnect < millis()) {
+                    Serial.println("");
+                    Serial.printf("Mqtt Server IP: %s PORT %d\n", this->mqttIP, 1883);
+                    Serial.println("Connecting to server...");
+                    MQTT.setServer(this->mqttIP, 1883); 
+                if (!MQTT.connect(deviceId)) { 
                     Serial.println("Failed to connect to MQTT server");
                 } else {
+                    MQTT.publish("dev", "Hello!");
                     Serial.println("MQTT connected!");
                     Serial.print("Estabilishing subscription to topic: ");
                     Serial.println(topic);
-                    if(!MQTT.subscribe(topic)){
+                    if (!MQTT.subscribe(topic)) {
                         Serial.println("Failed to subscribe to topic");
                         Serial.println("Disconnecting from MQTT server...");
                         MQTT.disconnect();
@@ -49,46 +50,33 @@ class Mqtt {
                         Serial.println("MQTT subscription done!");
                     }
                 }
-                reconnect = millis() + 5000; //Atualiza a contagem de tempo
+                reconnect = millis() + 5000;
                 }
+            } else {
+                // TODO publish
             }
         }
 
-        void connectMQTT(const char* ssid, const char* password, const char* topic, const char* mqttIP, int socket) {
-            wifiConnector.connectWiFiClient(ssid, password);
+        void connectMQTT(const char* ssid, const char* password, const char* topic, const char* mqttIP, uint16_t socket, const char* deviceId) {
+            strcpy(this->topic, topic);
+            strcpy(this->deviceId, deviceId);
+            strcpy(this->mqttIP, mqttIP);
+            strcpy(this->ssid, ssid);
+            strcpy(this->ssidPassword, password);
+            wifiConnector.connectWiFiClient(this->ssid, this->ssidPassword);
             // after WiFi is connected, connect MQTT
             Serial.print("MQTT server configured: ");
-            Serial.print(mqttIP);
+            Serial.print(this->mqttIP);
             Serial.print(" : ");
             Serial.println(socket);
-            MQTT.setServer(mqttIP, socket);
+            MQTT.setServer(this->mqttIP, socket);
             Serial.println("MQTT server set");
-            MQTT.setCallback(mqttCallback);
-            this->deviceId = deviceId;
-            this->topic = topic;
+            MQTT.setCallback([this](char* thing, uint8_t* msg, unsigned int s){
+                this->mqttCallback(thing, msg, s);
+            });
             delay(1000);
         }
         /*
-        void subscribe() {
-            // keep connection active
-            //MQTT.loop();
-            if (!MQTT.connected()) {
-                if (reconnect < millis()) {
-                    Serial.println("");
-                    Serial.println("Connecting to server...");
-                    if (!MQTT.connect(deviceId, tokenApi, mqttPassword)) {
-                        Serial.println("Failed to connect to MQTT server");
-                        Serial.println("Disconnecting from server...");
-                        MQTT.disconnect();
-                        Serial.println("Disconnected");
-                    }
-                    else {
-                        Serial.println("Subscription done!");
-                    }
-                }
-                reconnect = millis() + 5000;
-            }
-        }
 
         void publish() {
             // keep connection active
@@ -113,8 +101,7 @@ class Mqtt {
             }
         }
         */
-        static void mqttCallback(char* thing, byte* payload, unsigned int length) {
-            Serial.println("entered callback");
+        void mqttCallback(char* thing, byte* payload, unsigned int length) {
             // variable to store the message received in subscribe
             String message;
             // save the message characters in message
@@ -126,7 +113,6 @@ class Mqtt {
             Serial.print("Message received in subscribe: ");
             Serial.println(message);
         }
-
 };
 
 #endif

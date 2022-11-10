@@ -15,13 +15,17 @@ class ConfigMqtt {
         ConfigMqtt(WifiConnector &wifiConnector, LocalStorage &storage) : 
         wifiConnector(wifiConnector), mqtt(wifiConnector), storage(storage) {  
         }
-
+        /*
         void displayWifiNetworks() {
             mqtt.displayWifiNetworks();
         }
-    
-        void connectMqtt(const char* ssid, const char* password, const char* topic, const char* mqttHost , int socket) {
-            mqtt.connectMQTT(ssid, password, topic, mqttHost, socket);
+        */
+        void connectMqtt(const char* ssid, const char* password, const char* topic, const char* mqttHost , uint16_t socket, const char* deviceId) {
+            Serial.print("topic in configmqtt: ");
+            Serial.print(topic);
+            Serial.print(", deviceId in configmqtt: ");
+            Serial.println(deviceId);
+            mqtt.connectMQTT(ssid, password, topic, mqttHost, socket, deviceId);
         }
 
         void subscribe() {

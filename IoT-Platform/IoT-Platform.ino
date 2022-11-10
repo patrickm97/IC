@@ -17,7 +17,6 @@ ConfigMqtt configMqtt(wifiConnector, storage);
 bool preLoopExecuted = false;
 //String deviceId = "esp32", ssid = "iotserver", password = "lab@iiot", mqttIP = "10.42.0.1", topic = "dev";
 // int  mqttSocket = 1883;
-const uint16_t socket = 0;
 
 void preLoop() {
     if (!wifiConnector.isDeviceConfigured()) {
@@ -57,8 +56,8 @@ void loop()
         delay(5000);
         setZero();
         a++;
-    }*/
-    
+    }
+    */
     if (!wifiConnector.isDeviceConfigured()) {
         wifiConnector.handleWebServerClient();
         delay(2);
@@ -76,9 +75,10 @@ void loop()
             String password = storage.loadPassword();
             String topic = storage.loadTopic();
             String mqttIP = storage.loadMqttIP();
-            int socket = storage.loadMqttSocket();
+            uint16_t socket = storage.loadMqttSocket();
+            String deviceId = storage.loadDeviceId();
             delay(1000);
-            configMqtt.connectMqtt(ssid.c_str(), password.c_str(), topic.c_str(), mqttIP.c_str(), socket);
+            configMqtt.connectMqtt(ssid.c_str(), password.c_str(), topic.c_str(), mqttIP.c_str(), socket, deviceId.c_str());
             mqttConnected = true;
         }
 

@@ -15,11 +15,9 @@ using namespace std;
 
 class WifiConnector {
     private:
-        WiFiClient wifiClient;
         WebServer webServer;
         char serverSsid[100];
         char serverPassword[20];
-        WiFiServer wifiServer;
         regex ipRegex;
         LocalStorage& storage;
         WifiServerConfigurator wifiServerConfigurator; // don't use & when class owns this object
@@ -27,7 +25,7 @@ class WifiConnector {
     public:
         // constructor
         // : webServer(80)
-        WifiConnector(LocalStorage& storage) : wifiServer(), storage(storage), wifiServerConfigurator(storage) {
+        WifiConnector(LocalStorage& storage) : storage(storage), wifiServerConfigurator(storage) {
             int rcode = rand() % 10000;
             snprintf(this->serverSsid, 100, "%s%05d", "IoTAgro",rcode);
             snprintf(this->serverPassword, 20, "iot");
@@ -38,48 +36,6 @@ class WifiConnector {
             return this->wifiServerConfigurator.isDeviceConfigured();
         }
 
-        /*
-        void displayWifiNetworks() {
-            // get device MAC Address
-            Serial.print("MAC address: ");
-            Serial.println(WiFi.macAddress());
-
-            // get local device IP address
-            Serial.print("Device IP address: ");
-            Serial.println(WiFi.localIP());
-
-            // configure device as STA
-            Serial.println("Configuring to 'Station' mode...");
-            WiFi.mode(WIFI_STA);
-            WiFi.disconnect();
-            delay(1000);
-            Serial.println("Configuration done\n");
-
-            // scan wifi networks
-            Serial.println("Scanning Wi-Fi networks..,");
-            int number_of_networks = WiFi.scanNetworks();
-            Serial.println("Scan complete");
-            delay(1000);
-
-            if (number_of_networks == 0)
-                Serial.println("No Wi-Fi network found");
-            else {
-                Serial.print(number_of_networks);
-                Serial.println(" networks found");
-                delay(500);
-                for (int i = 0; i < number_of_networks; ++i) {
-                    Serial.print(i + 1);
-                    Serial.print(":");
-                    Serial.print(WiFi.SSID(i));
-                    Serial.print(" (");
-                    Serial.print(WiFi.RSSI(i)); // signal quality
-                    Serial.println(")");
-                    delay(1000);
-                }
-            }
-            Serial.println("");
-        }
-        */
         void connectWifiServer() {
             Serial.println();
             Serial.println();
@@ -152,14 +108,14 @@ class WifiConnector {
 
         void handleRoot() {
             String s;
-            s = "<html><header>Hello</header><br><p>How are you</p>";
+            s = "<html><header>Device parameters form</header><br><p>Fill out the form</p>";
             s += "<form action='/form'>";
             s += "<input placeholder='device ID' type='text' required='true' name='deviceId'><br><br>";
-            s += "<input placeholder='ssid' type='text' required='true' name='ssid'><br><br>";
-            s += "<input placeholder='senha' type='password' required='true' name='password'><br><br>";
+            s += "<input placeholder='wi-fi ssid' type='text' required='true' name='ssid'><br><br>";
+            s += "<input placeholder='password' type='password' required='true' name='password'><br><br>";
             s += "<input placeholder='MQTT IP' type='text' required='true' name='mqttIP'><br><br>";
-            s += "<input placeholder='MQTT socket' type='text' required='true' name='mqttSocket'><br><br>";
-            s += "<input placeholder='MQTT topic' type='text' required='true' name='topic'><br><br>";
+            s += "<input placeholder='MQTT Socket' type='text' required='true' name='mqttSocket'><br><br>";
+            s += "<input placeholder='MQTT Topic' type='text' required='true' name='topic'><br><br>";
             s += "<input type='submit' value='send'/>";
             s += "</form>";
             s += "</html>";

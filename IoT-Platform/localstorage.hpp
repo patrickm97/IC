@@ -38,20 +38,6 @@ public:
     *  mqttSocket: address 67 + 4 + /0 (67 to 71)
     *  topic: address 72 + 10 + /0 (72 to 83)
     */
-   /*
-    void saveData(String deviceId, String ssid, String password, String mqttIP, 
-                  String mqttPass, String topic) {
-        saveInfo(deviceId, START_POSITION_DEVICEID, LENGTH_LIMIT_DEVICEID);
-        saveInfo(ssid, START_POSITION_SSID, LENGTH_LIMIT_SSID);
-        saveInfo(password, START_POSITION_PASSWORD, LENGTH_LIMIT_PASSWORD);
-        saveInfo(mqttIP, START_POSITION_mqttIP, LENGTH_LIMIT_mqttIP);
-        if (mqttPass.length() > 0)
-            saveInfo(mqttPass, START_POSITION_MQTTPASS, LENGTH_LIMIT_MQTTPASS);
-        saveInfo(topic, START_POSITION_TOPIC, LENGTH_LIMIT_TOPIC);
-        EEPROM.write(0, 1);
-        delay(50);
-        EEPROM.commit();
-    }*/
 
     void saveConfig(ConfigParams config){
         saveInfo(config.deviceId, START_POSITION_DEVICEID, LENGTH_LIMIT_DEVICEID);
@@ -88,6 +74,10 @@ public:
         return outString;
     }
 
+    String loadDeviceId() {
+        return loadInfo(START_POSITION_DEVICEID, LENGTH_LIMIT_DEVICEID);
+    }
+
     String loadTopic() {
         return loadInfo(START_POSITION_TOPIC, LENGTH_LIMIT_TOPIC);
     }
@@ -104,7 +94,7 @@ public:
         return loadInfo(START_POSITION_MQTTIP, LENGTH_LIMIT_MQTTIP);
     }
 
-    int loadMqttSocket() {
+    uint16_t loadMqttSocket() {
         return loadInfo(START_POSITION_MQTTSOCKET, LENGTH_LIMIT_MQTTSOCKET).toInt();
     }
     
