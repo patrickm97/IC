@@ -19,21 +19,54 @@ class Mqtt {
         char ssidPassword[50];
         unsigned long waitTime;
         unsigned long reconnect;
+        float humidity;
+        float temperature;
+        char ALIAS1[50];
+        char ALIAS2[50];
+        long interval;
         
     public:
         Mqtt(WifiConnector &wifiConnector) : wifiConnector(wifiConnector), client(), MQTT(client) {
-            this->waitTime = 10000;
+            this->waitTime = 0;
             this->reconnect = 0;
+            this->humidity = 15.5;
+            this->temperature = 21.3;
+            strcpy(ALIAS1, "Humidity");
+            strcpy(ALIAS2, "Temperature");
+            this->interval = 10000;
+        }
+
+        void subscribe() {
+            Serial.println("");
+            Serial.printf("Mqtt Server IP: %s PORT %d\n", this->mqttIP, 1883);
+            Serial.println("Connecting to server...");
+            MQTT.setServer(this->mqttIP, 1883);
+        }
+
+        void publish() {
+            if (waitTime < millis()) {
+                if (isnan(humidity) || isnan(temperature))
+                    Serial.println("Failed to read sensor data!");
+                else {
+                    DynamicJsonDocument json(JSON_OBJECT_SIZE(2));
+                    json[ALIAS1] = temperature;
+                    json[ALIAS2] = humidity;
+                    size_t message_size = measureJson(json) + 1;
+                    char message[message_size];
+                    serializeJson(json, message, message_size);
+                    Serial.print("Message sent: ");
+                    Serial.println(message);
+                    MQTT.publish(topic, message);
+                }
+                waitTime = millis() + interval;
+            }
         }
         
         void loopMqtt() {
             MQTT.loop();
             if(!MQTT.connected()) {
                 if(reconnect < millis()) {
-                    Serial.println("");
-                    Serial.printf("Mqtt Server IP: %s PORT %d\n", this->mqttIP, 1883);
-                    Serial.println("Connecting to server...");
-                    MQTT.setServer(this->mqttIP, 1883); 
+                    subscribe(); 
                 if (!MQTT.connect(deviceId)) { 
                     Serial.println("Failed to connect to MQTT server");
                 } else {
@@ -53,7 +86,7 @@ class Mqtt {
                 reconnect = millis() + 5000;
                 }
             } else {
-                // TODO publish
+                publish();
             }
         }
 

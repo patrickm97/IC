@@ -12,7 +12,7 @@ class ISensor {
         list<int>::iterator pins;
         string sensorId;
         
-        virtual float readValue() = 0;
+        virtual int readValue() = 0;
         
         int readInterval() {
             this->tipo = 5;

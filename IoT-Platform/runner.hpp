@@ -4,14 +4,22 @@
 #include <iostream>
 #include <iterator>
 #include <list>
+#include <vector>
 using namespace std;
 #include "isensor.hpp"
 
 class Runner {
     private:
-        list<ISensor>::iterator sensors;
+        vector<ISensor> sensors;
+        vector<int> waitTimeArray;
     
     public:
+        Runner() {
+            for (int i = 0; i < sensors.size(); i++) {
+                waitTimeArray.push_back(sensors[i].readValue());
+            }
+        }
+
         void loop() {
             cout << "runner loop";
         }
@@ -21,6 +29,7 @@ class Runner {
         void loadSensorsConfig() {
             cout << "runner load sensors config";
         }
+
 };
 
 #endif
