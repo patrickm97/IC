@@ -17,6 +17,7 @@ class Mqtt {
         char mqttIP[50];
         char ssid[50];
         char ssidPassword[50];
+        uint16_t socket;
         unsigned long waitTime;
         unsigned long reconnect;
         float humidity;
@@ -31,6 +32,7 @@ class Mqtt {
             this->reconnect = 0;
             this->humidity = 15.5;
             this->temperature = 21.3;
+            this->socket = 0;
             strcpy(ALIAS1, "Humidity");
             strcpy(ALIAS2, "Temperature");
             this->interval = 10000;
@@ -38,28 +40,37 @@ class Mqtt {
 
         void subscribe() {
             Serial.println("");
-            Serial.printf("Mqtt Server IP: %s PORT %d\n", this->mqttIP, 1883);
+            Serial.printf("Mqtt Server IP: %s PORT %d\n", this->mqttIP, this->socket);
             Serial.println("Connecting to server...");
-            MQTT.setServer(this->mqttIP, 1883);
+            MQTT.setServer(this->mqttIP, this->socket);
         }
 
-        void publish() {
-            if (waitTime < millis()) {
-                if (isnan(humidity) || isnan(temperature))
-                    Serial.println("Failed to read sensor data!");
-                else {
-                    DynamicJsonDocument json(JSON_OBJECT_SIZE(2));
-                    json[ALIAS1] = temperature;
-                    json[ALIAS2] = humidity;
-                    size_t message_size = measureJson(json) + 1;
-                    char message[message_size];
-                    serializeJson(json, message, message_size);
-                    Serial.print("Message sent: ");
-                    Serial.println(message);
-                    MQTT.publish(topic, message);
-                }
-                waitTime = millis() + interval;
-            }
+        void publish(String sensor, String value) {
+            DynamicJsonDocument json(JSON_OBJECT_SIZE(2));
+            json[sensor.c_str()] = value;
+            size_t message_size = measureJson(json) + 1;
+            char message[message_size];
+            serializeJson(json, message, message_size);
+            Serial.print("Message sent: ");
+            Serial.println(message);
+            MQTT.publish(this->topic, message);
+            
+            // if (waitTime < millis()) {
+            //     if (isnan(humidity) || isnan(temperature))
+            //         Serial.println("Failed to read sensor data!");
+            //     else {
+            //         DynamicJsonDocument json(JSON_OBJECT_SIZE(2));
+            //         json[ALIAS1] = temperature;
+            //         json[ALIAS2] = humidity;
+            //         size_t message_size = measureJson(json) + 1;
+            //         char message[message_size];
+            //         serializeJson(json, message, message_size);
+            //         Serial.print("Message sent: ");
+            //         Serial.println(message);
+            //         MQTT.publish(this->topic, message);
+            //     }
+            //     waitTime = millis() + interval;
+            // }
         }
         
         void loopMqtt() {
@@ -86,7 +97,7 @@ class Mqtt {
                 reconnect = millis() + 5000;
                 }
             } else {
-                publish();
+                //publish();
             }
         }
 
@@ -96,6 +107,7 @@ class Mqtt {
             strcpy(this->mqttIP, mqttIP);
             strcpy(this->ssid, ssid);
             strcpy(this->ssidPassword, password);
+            this->socket = socket;
             wifiConnector.connectWiFiClient(this->ssid, this->ssidPassword);
             // after WiFi is connected, connect MQTT
             Serial.print("MQTT server configured: ");

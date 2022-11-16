@@ -32,8 +32,8 @@ class ConfigMqtt {
             //mqtt.subscribe();
         }
 
-        void publish() {
-            //mqtt.publish();
+        void publish(String sensor, String value) {
+            mqtt.publish(sensor, value);
         }
 
         void loopMqtt() {

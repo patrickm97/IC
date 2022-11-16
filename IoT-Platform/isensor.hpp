@@ -3,21 +3,23 @@
 
 #include <iostream>
 #include <iterator>
-#include <list>
+#include <vector>
 using namespace std;
 
 class ISensor {
     public:
         int tipo;
-        list<int>::iterator pins;
-        string sensorId;
+        vector<int> pins;
+        String sensorId;
+        unsigned long publishInterval = 0;
+        unsigned long lastPublish = 0;
         
-        virtual int readValue() = 0;
-        
-        int readInterval() {
-            this->tipo = 5;
-            return this->tipo;
-        }
+        virtual long readValue() = 0;
+    
+    ISensor(String sensorId, int tipo, vector<int> pins, unsigned long publishInterval)
+    : sensorId(sensorId), tipo(tipo), pins(pins), publishInterval(publishInterval)
+    {
+    };
 };
 
 #endif

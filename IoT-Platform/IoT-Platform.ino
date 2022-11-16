@@ -4,6 +4,8 @@
 #include "localstorage.hpp"
 #include "wificonnector.hpp"
 #include "configmqtt.hpp"
+#include "runner.hpp"
+#include "analogSensor.hpp"
 
 using namespace std;
 
@@ -14,6 +16,8 @@ using namespace std;
 LocalStorage storage;
 WifiConnector wifiConnector(storage);
 ConfigMqtt configMqtt(wifiConnector, storage);
+Runner runner(configMqtt);
+
 bool preLoopExecuted = false;
 //String deviceId = "esp32", ssid = "iotserver", password = "lab@iiot", mqttIP = "10.42.0.1", topic = "dev";
 // int  mqttSocket = 1883;
@@ -44,6 +48,7 @@ void setup()
     Serial.begin(115200);
     delay(3000);
     preLoop();
+    runner.addSensor(new AnalogSensor("LDR", 0, {15}, 5000));
 }
 
 bool displayMessage = true, mqttConnected = false, subscribeMqtt = true;
@@ -84,6 +89,7 @@ void loop()
 
         if (mqttConnected) {
             configMqtt.loopMqtt();
+            runner.loop();
             //configMqtt.subscribe();
         }
     }

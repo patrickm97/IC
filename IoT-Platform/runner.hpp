@@ -7,21 +7,31 @@
 #include <vector>
 using namespace std;
 #include "isensor.hpp"
+#include "configmqtt.hpp"
 
 class Runner {
     private:
-        vector<ISensor> sensors;
+        vector<ISensor*> sensors;
         vector<int> waitTimeArray;
-    
+        ConfigMqtt &config;
     public:
-        Runner() {
-            for (int i = 0; i < sensors.size(); i++) {
-                waitTimeArray.push_back(sensors[i].readValue());
-            }
+        Runner(ConfigMqtt &config) : config(config) {
+            
+        }
+
+        void addSensor(ISensor* sensor){
+            sensors.push_back(sensor);
         }
 
         void loop() {
-            cout << "runner loop";
+            for(int i=0;i<sensors.size();i++){
+                if(millis() - sensors[i]->lastPublish >  sensors[i]->publishInterval){
+                    long valorSensor = sensors[i]->readValue();
+                    config.publish(sensors[i]->sensorId, String(valorSensor));
+                    Serial.println("enviou sensor");
+                    sensors[i]->lastPublish = millis();
+                }
+            }
         }
         void setInterval() {
             cout << "runner set interval";
