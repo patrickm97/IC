@@ -23,8 +23,6 @@ class WifiConnector {
         WifiServerConfigurator wifiServerConfigurator; // don't use & when class owns this object
         
     public:
-        // constructor
-        // : webServer(80)
         WifiConnector(LocalStorage& storage) : storage(storage), wifiServerConfigurator(storage) {
             int rcode = rand() % 10000;
             snprintf(this->serverSsid, 100, "%s%05d", "IoTAgro",rcode);
@@ -58,20 +56,17 @@ class WifiConnector {
             Serial.println(password);
             WiFi.mode(WIFI_STA);
             WiFi.begin(ssid, password);
-        // wait for device to connect to network
+            // wait for device to connect to network
             while (WiFi.status() != WL_CONNECTED) {
                 delay(100);
                 Serial.print(".");
             }
-        // when connected, display IP address
+            // when connected, display IP address
             Serial.println("Connected!");
             Serial.print("IP address: ");
             Serial.println(WiFi.localIP());
         }
 
-        // WiFiClient getWifiClient() {
-        //     return this->client;
-        // }
         
         // WebServer methods
         void setupWebServer() {

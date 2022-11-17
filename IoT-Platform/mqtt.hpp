@@ -20,22 +20,12 @@ class Mqtt {
         uint16_t socket;
         unsigned long waitTime;
         unsigned long reconnect;
-        float humidity;
-        float temperature;
-        char ALIAS1[50];
-        char ALIAS2[50];
-        long interval;
         
     public:
         Mqtt(WifiConnector &wifiConnector) : wifiConnector(wifiConnector), client(), MQTT(client) {
             this->waitTime = 0;
             this->reconnect = 0;
-            this->humidity = 15.5;
-            this->temperature = 21.3;
             this->socket = 0;
-            strcpy(ALIAS1, "Humidity");
-            strcpy(ALIAS2, "Temperature");
-            this->interval = 10000;
         }
 
         void subscribe() {
@@ -54,23 +44,6 @@ class Mqtt {
             Serial.print("Message sent: ");
             Serial.println(message);
             MQTT.publish(this->topic, message);
-            
-            // if (waitTime < millis()) {
-            //     if (isnan(humidity) || isnan(temperature))
-            //         Serial.println("Failed to read sensor data!");
-            //     else {
-            //         DynamicJsonDocument json(JSON_OBJECT_SIZE(2));
-            //         json[ALIAS1] = temperature;
-            //         json[ALIAS2] = humidity;
-            //         size_t message_size = measureJson(json) + 1;
-            //         char message[message_size];
-            //         serializeJson(json, message, message_size);
-            //         Serial.print("Message sent: ");
-            //         Serial.println(message);
-            //         MQTT.publish(this->topic, message);
-            //     }
-            //     waitTime = millis() + interval;
-            // }
         }
         
         void loopMqtt() {
@@ -96,8 +69,6 @@ class Mqtt {
                 }
                 reconnect = millis() + 5000;
                 }
-            } else {
-                //publish();
             }
         }
 
@@ -116,36 +87,12 @@ class Mqtt {
             Serial.println(socket);
             MQTT.setServer(this->mqttIP, socket);
             Serial.println("MQTT server set");
-            MQTT.setCallback([this](char* thing, uint8_t* msg, unsigned int s){
+            MQTT.setCallback([this](char* thing, uint8_t* msg, unsigned int s) {
                 this->mqttCallback(thing, msg, s);
             });
             delay(1000);
         }
-        /*
-
-        void publish() {
-            // keep connection active
-            //MQTT.loop();
-            if (!MQTT.connected()) {
-                if(reconnect < millis()) {
-                    Serial.println("");
-                    Serial.println("Reconnecting to server...");
-                    if (!MQTT.connect(deviceId, tokenApi, mqttPassword)) {
-                        Serial.println("MQTT server connection error");
-                    } else {
-                        Serial.println("MQTT connected!");
-                        Serial.print("Publishing to: ");
-                        Serial.print(topic);
-                    }
-                    reconnect = millis() + 5000;
-                }
-            } else {
-                if (waitTime < millis()) {
-                    // TODO - publish sensor info to topic
-                }
-            }
-        }
-        */
+        
         void mqttCallback(char* thing, byte* payload, unsigned int length) {
             // variable to store the message received in subscribe
             String message;
