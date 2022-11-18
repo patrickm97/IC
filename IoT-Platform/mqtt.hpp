@@ -22,7 +22,7 @@ class Mqtt {
         unsigned long reconnect;
         
     public:
-        Mqtt(WifiConnector &wifiConnector) : wifiConnector(wifiConnector), client(), MQTT(client) {
+        Mqtt(WifiConnector &wifiConnector) : wifiConnector(wifiConnector), MQTT(client) {
             this->waitTime = 0;
             this->reconnect = 0;
             this->socket = 0;

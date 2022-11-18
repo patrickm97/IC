@@ -92,7 +92,6 @@ void loop()
         if (mqttConnected) {
             configMqtt.loopMqtt();
             runner.loop();
-            
         }
     }
 }

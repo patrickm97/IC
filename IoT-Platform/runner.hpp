@@ -2,8 +2,6 @@
 #define RUNNER_HPP
 
 #include <iostream>
-#include <iterator>
-#include <list>
 #include <vector>
 #include "isensor.hpp"
 #include "configmqtt.hpp"
@@ -11,7 +9,6 @@
 class Runner {
     private:
         vector<ISensor*> sensors;
-        vector<int> waitTimeArray;
         ConfigMqtt &config;
 
     public:
@@ -23,7 +20,7 @@ class Runner {
         }
 
         void loop() {
-            for(int i = 0; i < sensors.size(); i++){
+            for (int i = 0; i < sensors.size(); i++) {
                 if (millis() - sensors[i]->lastPublish > sensors[i]->publishInterval) {
                     long valorSensor = sensors[i]->readValue();
                     config.publish(sensors[i]->sensorId, String(valorSensor));
