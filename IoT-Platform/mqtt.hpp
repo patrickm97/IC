@@ -2,12 +2,16 @@
 #define MQTT_HPP
 
 #include "wificonnector.hpp"
+#include "runner.hpp"
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
 #include <iostream>
 using namespace std;
 
 class Mqtt {
+    public:
+    typedef std::function<void(uint8_t*, unsigned int)> interpretConfigCallback ;
+
     private:
         WifiConnector &wifiConnector;
         WiFiClient client;
@@ -21,18 +25,29 @@ class Mqtt {
         unsigned long waitTime;
         unsigned long reconnect;
         
+        interpretConfigCallback interpretCallback = nullptr;
+        
     public:
+        
         Mqtt(WifiConnector &wifiConnector) : wifiConnector(wifiConnector), MQTT(client) {
             this->waitTime = 0;
             this->reconnect = 0;
             this->socket = 0;
         }
 
-        void subscribe() {
+        void setInterpretConfigCallback(const interpretConfigCallback& interpretCallback){
+            this->interpretCallback = interpretCallback;
+        }
+
+        void subscribeInfo() {
             Serial.println("");
             Serial.printf("Mqtt Server IP: %s PORT %d\n", this->mqttIP, this->socket);
             Serial.println("Connecting to server...");
             MQTT.setServer(this->mqttIP, this->socket);
+        }
+        // qual IP usar para os outros subscribe?
+        void subscribeSetInterval() {
+            MQTT.subscribe("setInterval");
         }
 
         void publish(String sensor, String value) {
@@ -50,7 +65,7 @@ class Mqtt {
             MQTT.loop();
             if(!MQTT.connected()) {
                 if(reconnect < millis()) {
-                    subscribe(); 
+                    subscribeInfo();
                 if (!MQTT.connect(deviceId)) { 
                     Serial.println("Failed to connect to MQTT server");
                 } else {
@@ -93,9 +108,12 @@ class Mqtt {
             delay(1000);
         }
         
-        void mqttCallback(char* thing, byte* payload, unsigned int length) {
+        void mqttCallback(char* topic, byte* payload, unsigned int length) {
+            this->interpretCallback(payload, length);
+            
             // variable to store the message received in subscribe
             String message;
+            
             // save the message characters in message
             for (int i = 0; i < length; i++) {
                 char c = (char)payload[i];

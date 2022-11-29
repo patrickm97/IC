@@ -4,6 +4,7 @@
         "string": "cpp",
         "regex": "cpp",
         "bitset": "cpp",
-        "random": "cpp"
+        "random": "cpp",
+        "functional": "cpp"
     }
 }
