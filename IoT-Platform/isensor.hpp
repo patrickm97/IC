@@ -4,11 +4,12 @@
 #include <iostream>
 #include <vector>
 using namespace std;
-
+// .
 class ISensor {
     public:
-        vector<int> pins;
+        // type analog or digital
         String sensorId;
+        vector<int> pins;
         unsigned long publishInterval;
         unsigned long lastPublish;
         

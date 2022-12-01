@@ -5,7 +5,7 @@
 
 class DigitalSensor : public ISensor {
     public:
-        DigitalSensor(String sensorId, vector<int> pins, unsigned long publishInterval): ISensor(sensorId, pins, publishInterval){
+        DigitalSensor(String sensorId, vector<int> pins, unsigned long publishInterval): ISensor(sensorId, pins, publishInterval) {
         }
 
         long readValue() {

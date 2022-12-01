@@ -2,7 +2,6 @@
 #define MQTT_HPP
 
 #include "wificonnector.hpp"
-#include "runner.hpp"
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
 #include <iostream>
@@ -10,7 +9,7 @@ using namespace std;
 
 class Mqtt {
     public:
-    typedef std::function<void(uint8_t*, unsigned int)> interpretConfigCallback ;
+    typedef std::function<void(uint8_t*, unsigned int)> interpretConfigCallback;
 
     private:
         WifiConnector &wifiConnector;
@@ -28,7 +27,6 @@ class Mqtt {
         interpretConfigCallback interpretCallback = nullptr;
         
     public:
-        
         Mqtt(WifiConnector &wifiConnector) : wifiConnector(wifiConnector), MQTT(client) {
             this->waitTime = 0;
             this->reconnect = 0;
@@ -45,9 +43,12 @@ class Mqtt {
             Serial.println("Connecting to server...");
             MQTT.setServer(this->mqttIP, this->socket);
         }
-        // qual IP usar para os outros subscribe?
-        void subscribeSetInterval() {
-            MQTT.subscribe("setInterval");
+        
+        void subscribeAddSensor() {
+            char addTopic[10] = "add";
+            Serial.print("Estabilishing subscription to topic: ");
+            Serial.println(addTopic);
+            MQTT.subscribe(addTopic);
         }
 
         void publish(String sensor, String value) {
@@ -73,6 +74,7 @@ class Mqtt {
                     Serial.println("MQTT connected!");
                     Serial.print("Estabilishing subscription to topic: ");
                     Serial.println(topic);
+                    subscribeAddSensor();
                     if (!MQTT.subscribe(topic)) {
                         Serial.println("Failed to subscribe to topic");
                         Serial.println("Disconnecting from MQTT server...");
@@ -109,7 +111,8 @@ class Mqtt {
         }
         
         void mqttCallback(char* topic, byte* payload, unsigned int length) {
-            this->interpretCallback(payload, length);
+            if (strcmp(topic,"add") == 0)
+                this->interpretCallback(payload, length);
             
             // variable to store the message received in subscribe
             String message;
@@ -119,9 +122,17 @@ class Mqtt {
                 char c = (char)payload[i];
                 message += c;
             }
-            // TODO - handle message received
+
             Serial.print("Message received in subscribe: ");
             Serial.println(message);
+
+            if (topic == "add") {
+                int n = message.length();
+                char json[n+1];
+                strcpy(json, message.c_str());
+                Serial.print("String to char[]: ");
+                Serial.println(json);
+            }
         }
 };
 

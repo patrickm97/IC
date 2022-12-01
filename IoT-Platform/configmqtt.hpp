@@ -1,8 +1,8 @@
 #ifndef CONFIGMQTT_HPP
 #define CONFIGMQTT_HPP
 
-#include "localstorage.hpp"
-#include "wificonnector.hpp"
+//#include "localstorage.hpp"
+//#include "wificonnector.hpp"
 #include "mqtt.hpp"
 
 class ConfigMqtt {
@@ -21,11 +21,6 @@ class ConfigMqtt {
         }
         
         void connectMqtt(const char* ssid, const char* password, const char* topic, const char* mqttHost , uint16_t socket, const char* deviceId) {
-            Serial.print("topic in configmqtt: ");
-            Serial.print(topic);
-            Serial.print(", deviceId in configmqtt: ");
-            Serial.println(deviceId);
-            
             mqtt.connectMQTT(ssid, password, topic, mqttHost, socket, deviceId);
         }
 
@@ -36,9 +31,6 @@ class ConfigMqtt {
         void loopMqtt() {
             mqtt.loopMqtt();
         }
-
-        
-
 };
 
 #endif

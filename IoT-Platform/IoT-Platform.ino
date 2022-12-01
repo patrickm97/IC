@@ -5,8 +5,8 @@
 #include "wificonnector.hpp"
 #include "configmqtt.hpp"
 #include "runner.hpp"
-#include "analogSensor.hpp"
-#include "digitalSensor.hpp"
+//#include "analogSensor.hpp"
+//#include "digitalSensor.hpp"
 
 using namespace std;
 
@@ -42,15 +42,15 @@ void setZero() {
     delay(1000);
     Serial.println("0 set to 0");
 }
-
-void setup() 
+// .
+void setup()
 {
     EEPROM.begin(EEPROM_SIZE);
     Serial.begin(115200);
     delay(3000);
     preLoop();
-    runner.addSensor(new AnalogSensor("LDR", {15}, 8000));
-    runner.addSensor(new DigitalSensor("Button", {4}, 4000));
+    //runner.addSensor(new AnalogSensor("LDR", {15}, 8000));
+    //runner.addSensor(new DigitalSensor("Button", {4}, 4000));
 }
 
 bool displayMessage = true, mqttConnected = false, subscribeMqtt = true;
