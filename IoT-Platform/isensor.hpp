@@ -4,7 +4,7 @@
 #include <iostream>
 #include <vector>
 using namespace std;
-// .
+
 class ISensor {
     public:
         // type analog or digital

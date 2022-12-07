@@ -71,7 +71,7 @@ class Runner {
             // if analog -> addSensor(new AnalogSensor...)
             // if digital -> addSensor(new DigitalSensor...)
             // concatenar topico dev/id
-            /*  exemplo de formato, escrito no publish no terminal
+            /*  exemplo de formato, escrito no mosquitto_pub no terminal
                 '{
                     "id":"LDR",
                     "interval":5000,

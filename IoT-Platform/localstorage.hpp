@@ -68,9 +68,7 @@ public:
         EEPROM.readString(startPos, outCharArray, lengthLimit);
         String outString = "";
         for (int i = 0; i < strlen(outCharArray); i++)
-        {
             outString += outCharArray[i];
-        }
         return outString;
     }
 
@@ -96,14 +94,6 @@ public:
 
     uint16_t loadMqttSocket() {
         return loadInfo(START_POSITION_MQTTSOCKET, LENGTH_LIMIT_MQTTSOCKET).toInt();
-    }
-    
-    int loadSocket() {
-        String strmqttIP = loadMqttIP();
-        int mqttIPLen = strmqttIP.length();
-        int socketIdx = mqttIPLen - 5;
-        String submqttIP = strmqttIP.substring(socketIdx);
-        return submqttIP.toInt();
     }
     
     bool isDeviceConfigured() {

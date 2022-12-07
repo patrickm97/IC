@@ -19,6 +19,10 @@ class ConfigMqtt {
         void setInterpretConfigCallback(const Mqtt::interpretConfigCallback& interpretCallback){
             this->mqtt.setInterpretConfigCallback(interpretCallback);
         }
+
+        void setInterpretOutCallback(const Mqtt::interpretOutCallback& interpretCallbackOut){
+            this->mqtt.setInterpretOutCallback(interpretCallbackOut);
+        }
         
         void connectMqtt(const char* ssid, const char* password, const char* topic, const char* mqttHost , uint16_t socket, const char* deviceId) {
             mqtt.connectMQTT(ssid, password, topic, mqttHost, socket, deviceId);

@@ -9,7 +9,8 @@ using namespace std;
 
 class Mqtt {
     public:
-    typedef std::function<void(uint8_t*, unsigned int)> interpretConfigCallback;
+        typedef std::function<void(uint8_t*, unsigned int)> interpretConfigCallback;
+        typedef std::function<void(uint8_t*, unsigned int)> interpretOutCallback;
 
     private:
         WifiConnector &wifiConnector;
@@ -25,6 +26,7 @@ class Mqtt {
         unsigned long reconnect;
         
         interpretConfigCallback interpretCallback = nullptr;
+        interpretOutCallback interpretCallbackOut = nullptr;
         
     public:
         Mqtt(WifiConnector &wifiConnector) : wifiConnector(wifiConnector), MQTT(client) {
@@ -37,7 +39,11 @@ class Mqtt {
             this->interpretCallback = interpretCallback;
         }
 
-        void subscribeInfo() {
+        void setInterpretOutCallback(const interpretOutCallback& interpretCallbackOut){
+            this->interpretCallbackOut = interpretCallbackOut;
+        }
+
+        void subscribeConnect() {
             Serial.println("");
             Serial.printf("Mqtt Server IP: %s PORT %d\n", this->mqttIP, this->socket);
             Serial.println("Connecting to server...");
@@ -45,10 +51,15 @@ class Mqtt {
         }
         
         void subscribeAddSensor() {
-            char addTopic[10] = "add";
+            char addTopic[4] = "add";
             Serial.print("Estabilishing subscription to topic: ");
             Serial.println(addTopic);
             MQTT.subscribe(addTopic);
+            Serial.println("MQTT subscription done!");
+        }
+
+        void subscribeTopic() {
+
         }
 
         void publish(String sensor, String value) {
@@ -66,7 +77,7 @@ class Mqtt {
             MQTT.loop();
             if(!MQTT.connected()) {
                 if(reconnect < millis()) {
-                    subscribeInfo();
+                    subscribeConnect();
                 if (!MQTT.connect(deviceId)) { 
                     Serial.println("Failed to connect to MQTT server");
                 } else {
@@ -111,8 +122,12 @@ class Mqtt {
         }
         
         void mqttCallback(char* topic, byte* payload, unsigned int length) {
-            if (strcmp(topic,"add") == 0)
+            if (strcmp(topic, "add") == 0)
                 this->interpretCallback(payload, length);
+
+            // TODO - if topic == out -> interpretCallbackOut(payload, length);
+            if (strcmp(topic, "out") == 0)
+                this->interpretCallbackOut(payload, length);
             
             // variable to store the message received in subscribe
             String message;

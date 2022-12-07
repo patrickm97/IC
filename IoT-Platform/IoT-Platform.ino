@@ -21,7 +21,7 @@ Runner runner(configMqtt);
 
 bool preLoopExecuted = false;
 //String deviceId = "esp32", ssid = "iotserver", password = "lab@iiot", mqttIP = "10.42.0.1", topic = "dev";
-// int  mqttSocket = 1883;
+// int mqttSocket = 1883;
 
 void preLoop() {
     if (!wifiConnector.isDeviceConfigured()) {
