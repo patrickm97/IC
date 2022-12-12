@@ -55,11 +55,19 @@ class Mqtt {
             Serial.print("Estabilishing subscription to topic: ");
             Serial.println(addTopic);
             MQTT.subscribe(addTopic);
-            Serial.println("MQTT subscription done!");
+            Serial.print("MQTT subscription to topic ");
+            Serial.print(addTopic);
+            Serial.println(" done!");
         }
 
         void subscribeTopic() {
-
+            char outTopic[4] = "out";
+            Serial.print("Estabilishing subscription to topic: ");
+            Serial.println(outTopic);
+            MQTT.subscribe(outTopic);
+            Serial.print("MQTT subscription to topic ");
+            Serial.print(outTopic);
+            Serial.println(" done!");
         }
 
         void publish(String sensor, String value) {
@@ -78,7 +86,7 @@ class Mqtt {
             if(!MQTT.connected()) {
                 if(reconnect < millis()) {
                     subscribeConnect();
-                if (!MQTT.connect(deviceId)) { 
+                if (!MQTT.connect(deviceId)) {
                     Serial.println("Failed to connect to MQTT server");
                 } else {
                     MQTT.publish("dev", "Hello!");
@@ -86,6 +94,7 @@ class Mqtt {
                     Serial.print("Estabilishing subscription to topic: ");
                     Serial.println(topic);
                     subscribeAddSensor();
+                    subscribeTopic();
                     if (!MQTT.subscribe(topic)) {
                         Serial.println("Failed to subscribe to topic");
                         Serial.println("Disconnecting from MQTT server...");
@@ -108,7 +117,7 @@ class Mqtt {
             strcpy(this->ssidPassword, password);
             this->socket = socket;
             wifiConnector.connectWiFiClient(this->ssid, this->ssidPassword);
-            // after WiFi is connected, connect MQTT
+            // after WiFi Client is connected, connect MQTT
             Serial.print("MQTT server configured: ");
             Serial.print(this->mqttIP);
             Serial.print(" : ");
@@ -125,7 +134,6 @@ class Mqtt {
             if (strcmp(topic, "add") == 0)
                 this->interpretCallback(payload, length);
 
-            // TODO - if topic == out -> interpretCallbackOut(payload, length);
             if (strcmp(topic, "out") == 0)
                 this->interpretCallbackOut(payload, length);
             
@@ -140,14 +148,6 @@ class Mqtt {
 
             Serial.print("Message received in subscribe: ");
             Serial.println(message);
-
-            if (topic == "add") {
-                int n = message.length();
-                char json[n+1];
-                strcpy(json, message.c_str());
-                Serial.print("String to char[]: ");
-                Serial.println(json);
-            }
         }
 };
 

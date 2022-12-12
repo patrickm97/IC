@@ -1,8 +1,6 @@
 #ifndef CONFIGMQTT_HPP
 #define CONFIGMQTT_HPP
 
-//#include "localstorage.hpp"
-//#include "wificonnector.hpp"
 #include "mqtt.hpp"
 
 class ConfigMqtt {

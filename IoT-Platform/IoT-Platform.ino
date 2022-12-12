@@ -5,8 +5,6 @@
 #include "wificonnector.hpp"
 #include "configmqtt.hpp"
 #include "runner.hpp"
-//#include "analogSensor.hpp"
-//#include "digitalSensor.hpp"
 
 using namespace std;
 
@@ -27,7 +25,6 @@ void preLoop() {
     if (!wifiConnector.isDeviceConfigured()) {
         Serial.println("Device not configured, configuring...");
         wifiConnector.connectWifiServer();
-        //wifiConnector.setupWebServer();
     }
     else {
         Serial.println("Device already registered, printing info...");
@@ -42,7 +39,7 @@ void setZero() {
     delay(1000);
     Serial.println("0 set to 0");
 }
-// .
+
 void setup()
 {
     EEPROM.begin(EEPROM_SIZE);
@@ -88,7 +85,6 @@ void loop()
             configMqtt.connectMqtt(ssid.c_str(), password.c_str(), topic.c_str(), mqttIP.c_str(), socket, deviceId.c_str());
             mqttConnected = true;
         }
-
         if (mqttConnected) {
             configMqtt.loopMqtt();
             runner.loop();
