@@ -134,9 +134,11 @@ class Mqtt {
             if (strcmp(topic, "add") == 0)
                 this->interpretCallback(payload, length);
 
-            if (strcmp(topic, "out") == 0)
+            if (strcmp(topic, "out") == 0) {
+                Serial.println("Entered out callback");
                 this->interpretCallbackOut(payload, length);
-            
+            }
+                
             // variable to store the message received in subscribe
             String message;
             

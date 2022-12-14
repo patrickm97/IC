@@ -77,7 +77,7 @@ class Runner {
                     "id":"LDR",
                     "interval":5000,
                     "pins":[12],
-                    "typo":"analog"
+                    "type":"analog"
                 }'
             */
         }
@@ -93,29 +93,45 @@ class Runner {
             DynamicJsonDocument doc(1024);
             deserializeJson(doc, json);
             
-            String sensorId = doc["id"];
-            int pin = doc["pins"][0];
-            unsigned long publishInterval = doc["interval"];
+            int pin = doc["pin"];
+            int signal = doc["signal"];
             String type = doc["type"];
-            vector<int> pins = {pin};
 
-            if (type.equals("analog"))
-                addSensor(new AnalogSensor(sensorId, pins, publishInterval), type);
-            
-            if (type.equals("digital"))
-                addSensor(new DigitalSensor(sensorId, pins, publishInterval), type);
+            // pin 16: ESP32's GPIO16
+            if (type.equals("analog") && pin == 16) {
+                const int freq = signal;
+                const int ledChannel = 0;
+                const int resolution = 8;
 
-            // vai chamar send signal
-            // JSON recebido do Mqtt precisa do ID, intervalo, porta[], tipo (digital/analog)
-            // if analog -> addSensor(new AnalogSensor...)
-            // if digital -> addSensor(new DigitalSensor...)
-            // concatenar topico dev/id
+                ledcSetup(ledChannel, freq, resolution);
+                ledcAttachPin(pin, ledChannel);
+
+                // increase the LED brightness
+                for(int dutyCycle = 0; dutyCycle <= 255; dutyCycle++){   
+                ledcWrite(ledChannel, dutyCycle);
+                delay(15);
+                }
+
+                // decrease the LED brightness
+                for(int dutyCycle = 255; dutyCycle >= 0; dutyCycle--){
+                    ledcWrite(ledChannel, dutyCycle);   
+                    delay(15);
+                }
+            }
+                
+            if (type.equals("digital") && (signal == 0 || signal == 1)) {
+                digitalWrite(pin, signal);
+                Serial.print("Digitalwrite on pin ");
+                Serial.print(pin);
+                Serial.print(", signal: ");
+                Serial.println(signal);
+            }
+
             /*  exemplo de formato, escrito no mosquitto_pub no terminal
                 '{
-                    "id":"LDR",
-                    "interval":5000,
-                    "pins":[12],
-                    "typo":"analog"
+                    "pin":16,
+                    "signal":1,
+                    "type":"analog"
                 }'
             */
         }
