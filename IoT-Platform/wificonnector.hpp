@@ -5,7 +5,6 @@
 #include <string>
 #include <WiFi.h>
 #include <WiFiClient.h>
-#include <regex>
 #include <WebServer.h>
 #include <ESPmDNS.h>
 #include "configParams.hpp"
@@ -18,16 +17,14 @@ class WifiConnector {
         WebServer webServer;
         char serverSsid[100];
         char serverPassword[20];
-        regex ipRegex;
         LocalStorage& storage;
-        WifiServerConfigurator wifiServerConfigurator; // don't use & when class owns this object
+        WifiServerConfigurator wifiServerConfigurator;
         
     public:
         WifiConnector(LocalStorage& storage) : storage(storage), wifiServerConfigurator(storage) {
             int rcode = rand() % 10000;
             snprintf(this->serverSsid, 100, "%s%05d", "IoTAgro",rcode);
             snprintf(this->serverPassword, 20, "iot");
-            this->ipRegex = "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\:\\d{1,4}";
         }
 
         bool isDeviceConfigured() {
@@ -67,7 +64,6 @@ class WifiConnector {
             Serial.println(WiFi.localIP());
         }
 
-        
         // WebServer methods
         void setupWebServer() {
             if (MDNS.begin("esp")) {

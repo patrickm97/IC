@@ -7,7 +7,7 @@ class DigitalSensor : public ISensor {
     public:
         DigitalSensor(String sensorId, vector<int> pins, unsigned long publishInterval): ISensor(sensorId, pins, publishInterval) {
         }
-        // TODO - sensor com 2 pinos, ex: ultrasound
+        
         long readValue() {
             if (this->pins.size() > 0) {
                 long value = 0;

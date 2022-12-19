@@ -35,11 +35,11 @@ class Mqtt {
             this->socket = 0;
         }
 
-        void setInterpretConfigCallback(const interpretConfigCallback& interpretCallback){
+        void setInterpretConfigCallback(const interpretConfigCallback& interpretCallback) {
             this->interpretCallback = interpretCallback;
         }
 
-        void setInterpretOutCallback(const interpretOutCallback& interpretCallbackOut){
+        void setInterpretOutCallback(const interpretOutCallback& interpretCallbackOut) {
             this->interpretCallbackOut = interpretCallbackOut;
         }
 
@@ -139,7 +139,6 @@ class Mqtt {
                 
             // variable to store the message received in subscribe
             String message;
-            
             // save the message characters in message
             for (int i = 0; i < length; i++) {
                 char c = (char)payload[i];

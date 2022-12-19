@@ -4,15 +4,12 @@
 #include <iostream>
 #include <Arduino.h>
 #include <cstring>
-#include <vector>
-#include <algorithm>
-#include <iterator>
 #include <EEPROM.h>
 #include "configParams.hpp"
 using namespace std;
 
 #define MAIN_POSITION_CONFIGURED 0
-// 255.255.255.255:1000 -> len = 20
+
 #define START_POSITION_DEVICEID 1
 #define START_POSITION_SSID 13
 #define START_POSITION_PASSWORD 35

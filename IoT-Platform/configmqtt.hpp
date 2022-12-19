@@ -14,11 +14,11 @@ class ConfigMqtt {
         wifiConnector(wifiConnector), mqtt(wifiConnector), storage(storage) {  
         }
 
-        void setInterpretConfigCallback(const Mqtt::interpretConfigCallback& interpretCallback){
+        void setInterpretConfigCallback(const Mqtt::interpretConfigCallback& interpretCallback) {
             this->mqtt.setInterpretConfigCallback(interpretCallback);
         }
 
-        void setInterpretOutCallback(const Mqtt::interpretOutCallback& interpretCallbackOut){
+        void setInterpretOutCallback(const Mqtt::interpretOutCallback& interpretCallbackOut) {
             this->mqtt.setInterpretOutCallback(interpretCallbackOut);
         }
         
