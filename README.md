@@ -1,3 +1,3 @@
-# Iniciação Científica - Mini estufas inteligentes conectadas à IoT
+# Undergraduate Research Project: Smart Mini Greenhouses Connected to IoT
 
-O objetivo desse projeto é o desenvolvimento de uma plataforma para captura de dados a partir de uma mini-estufa utilizando dispositivos físicos e placas de prototipagem rápida. Essa plataforma é extensível para que novos componentes possam ser adicionados de forma transparente.
+The objective of this project is a platform developed for capturing data from a mini-greenhouse using physical devices and rapid prototyping boards. This platform is extensible so that new components can be added transparently.
